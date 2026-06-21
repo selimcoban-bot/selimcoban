@@ -1,0 +1,66 @@
+# Pre-kickoff CLV alerts via GitHub Actions.
+#
+# This is the CONVENIENCE option. Read the caveats before relying on it:
+#
+#  1. TIMING: GitHub's cron is best-effort and is frequently delayed 5-15+ minutes
+#     under load, so "5 minutes before kickoff" becomes approximate. For precise
+#     timing run notify.py --loop on an always-on host (see INTEGRATION.md).
+#  2. STATE: Actions runners are ephemeral. The SQLite file (dedupe + open->close
+#     history) does not persist by default. The cache step below restores/saves it
+#     best-effort, but cache can be evicted -- so an alert may occasionally repeat,
+#     and the closing-line history is less complete than on a persistent host.
+#  3. QUOTA: each run spends ~1 Odds API credit per sport. The free tier is 500/mo.
+#     Running every 5 min around the clock = ~8,600 credits/mo (far over free).
+#     The schedule below is deliberately scoped to a few hours; widen it only on a
+#     paid Odds API plan. Tune the cron to the hours your matches actually kick off.
+#
+# Secrets to set (Settings -> Secrets and variables -> Actions):
+#   ODDS_API_KEY, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM, EMAIL_TO
+# Never commit these to the repo or the website.
+
+name: clv-alerts
+
+on:
+  schedule:
+    # Every 5 minutes, but only 16:00-22:55 UTC. Edit to match your kickoff window.
+    - cron: "*/5 16-22 * * *"
+  workflow_dispatch: {}   # lets you trigger a manual test run from the Actions tab
+
+# Avoid overlapping runs.
+concurrency:
+  group: clv-alerts
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install numpy scipy requests
+
+      # Best-effort persistence of the SQLite ledger between runs.
+      - name: Restore ledger
+        uses: actions/cache@v4
+        with:
+          path: clv_lab.db
+          key: clv-db-${{ github.run_id }}
+          restore-keys: |
+            clv-db-
+
+      - name: Run alerter (one pass)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          CLV_DB: clv_lab.db
+        run: python3 notify.py

@@ -1,0 +1,3022 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WM 2026 – Analyse & Prognosen</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --accent: #3b82f6;
+    --accent2: #10b981;
+    --accent3: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { font-size: 2rem; }
+  .logo h1 { font-size: 1.4rem; font-weight: 700; background: linear-gradient(90deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .by-credit {
+    font-size: 0.7rem; font-weight: 600; font-style: italic; letter-spacing: .03em;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-left: 8px; opacity: 0.9; vertical-align: middle;
+  }
+  .logo p { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(239,68,68,0.15); border: 1px solid var(--red); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--red); }
+  .live-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+
+  /* NAV */
+  nav { display: flex; gap: 4px; padding: 16px 24px; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; }
+  nav button {
+    padding: 8px 18px; border-radius: 8px; border: none; background: transparent;
+    color: var(--muted); cursor: pointer; font-size: 0.85rem; font-weight: 500; white-space: nowrap; transition: all .2s;
+  }
+  nav button.active { background: var(--accent); color: #fff; }
+  nav button:hover:not(.active) { background: var(--card2); color: var(--text); }
+
+  /* MAIN */
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; }
+  .badge-green { background: rgba(16,185,129,.2); color: #34d399; }
+  .badge-yellow { background: rgba(245,158,11,.2); color: #fbbf24; }
+  .badge-red { background: rgba(239,68,68,.2); color: #f87171; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+
+  /* MATCH CARD */
+  .match-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    transition: transform .2s, border-color .2s; cursor: pointer;
+  }
+  .match-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .match-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .match-group { font-size: 0.7rem; color: var(--muted); }
+  .match-status-live { color: var(--red); font-size: 0.75rem; font-weight: 700; animation: pulse 1.2s infinite; }
+  .match-status-done { color: var(--accent2); font-size: 0.75rem; font-weight: 600; }
+  .match-status-soon { color: var(--accent3); font-size: 0.75rem; font-weight: 600; }
+  .match-teams { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  .team-block { text-align: center; flex: 1; min-width: 0; }
+  .team-flag { font-size: 2rem; display: block; margin-bottom: 4px; }
+  .team-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; cursor: help; }
+  .score-block { text-align: center; min-width: 70px; }
+  .score { font-size: 1.8rem; font-weight: 800; color: var(--text); }
+  .score-vs { font-size: 0.9rem; color: var(--muted); }
+  .prob-bar { margin-top: 12px; }
+  .prob-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; font-size: 0.72rem; }
+  .prob-label { width: 80px; min-width: 80px; color: var(--muted); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prob-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prob-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .prob-fill-win { background: linear-gradient(90deg,#3b82f6,#60a5fa); }
+  .prob-fill-draw { background: linear-gradient(90deg,#6b7280,#9ca3af); }
+  .prob-fill-lose { background: linear-gradient(90deg,#ef4444,#f87171); }
+  .prob-pct { width: 32px; color: var(--text); font-weight: 600; }
+  .match-time { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 10px; }
+  .xg-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .scorers-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: 0.72rem; color: var(--muted); }
+  .scorers-col { flex: 1; text-align: left; }
+  .scorers-col-away { text-align: right; }
+  .scorer-entry { line-height: 1.5; }
+  .scorer-minute { color: var(--accent3); font-weight: 600; }
+  .modal-scorers { margin-bottom: 14px; }
+  .modal-scorers-title { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .04em; }
+
+  /* SPIELBERICHT */
+  .lineup-report { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .lineup-report-title { font-size: 0.85rem; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 14px; }
+  .lineup-teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:640px) { .lineup-teams-grid { grid-template-columns: 1fr; } }
+  .lineup-team-block { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+  .lineup-team-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; }
+  .lineup-formation { font-weight: 400; color: var(--muted); font-size: 0.72rem; }
+  .lineup-subtitle { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 6px; }
+  .lineup-subtitle:first-of-type { margin-top: 0; }
+  .player-row { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 4px 2px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .player-row:last-child { border-bottom: none; }
+  .player-row-bench { opacity: 0.8; }
+  .player-number { width: 18px; flex-shrink: 0; color: var(--muted); font-weight: 700; font-size: 0.7rem; text-align: right; }
+  .player-pos-tag { width: 28px; flex-shrink: 0; color: var(--accent); font-weight: 700; font-size: 0.65rem; }
+  .player-fullname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-extras { display: flex; gap: 2px; align-items: center; font-size: 0.7rem; flex-shrink: 0; }
+  .sub-info { font-size: 0.65rem; font-weight: 700; padding: 0 2px; }
+  .sub-in { color: var(--accent2); }
+  .sub-out { color: var(--red); }
+  .card-icon { display: inline-block; width: 8px; height: 11px; border-radius: 1px; margin: 0 1px; }
+  .card-yellow { background: #fbbf24; }
+  .card-red { background: var(--red); }
+  .player-rating { flex-shrink: 0; font-size: 0.7rem; font-weight: 800; padding: 1px 6px; border-radius: 5px; min-width: 30px; text-align: center; }
+  .rating-great { background: rgba(16,185,129,.22); color: #34d399; }
+  .rating-good { background: rgba(59,130,246,.22); color: #60a5fa; }
+  .rating-ok { background: rgba(245,158,11,.22); color: #fbbf24; }
+  .rating-poor { background: rgba(239,68,68,.22); color: #f87171; }
+  .rating-none { background: rgba(255,255,255,.08); color: var(--muted); }
+
+  /* PITCH VIEW (zwei eigenständige vertikale Spielfelder, je Team eines, nebeneinander) */
+  .pitch-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+  .pitch-two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+  .pitch-team-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pitch-team-label { font-size: 0.92rem; font-weight: 700; color: var(--text); text-align: center; }
+  .pitch-field {
+    position: relative; border-radius: 8px; overflow: hidden;
+    background-color: #1e7a3a;
+    background-image: repeating-linear-gradient(
+      0deg, rgba(255,255,255,.05) 0, rgba(255,255,255,.05) 26px,
+      transparent 26px, transparent 52px
+    );
+    box-shadow: inset 0 0 30px rgba(0,0,0,.35);
+    width: 100%; aspect-ratio: 200 / 320;
+  }
+  .pitch-svg-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .pitch-outline { fill: none; stroke: rgba(255,255,255,.4); stroke-width: 1.5; }
+  .pitch-line { stroke: rgba(255,255,255,.4); stroke-width: 1.5; }
+  .pitch-line-fill { fill: none; stroke: rgba(255,255,255,.4); stroke-width: 1.5; }
+  .pitch-player {
+    position: absolute; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    width: 30%;
+    pointer-events: none;
+  }
+  .pitch-player-dot {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 800; color: #0d2818;
+    border: 2px solid rgba(255,255,255,.85);
+    box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  }
+  .pitch-player-dot.rating-great { background: #34d399; }
+  .pitch-player-dot.rating-good { background: #60a5fa; color: #0a0e1a; }
+  .pitch-player-dot.rating-ok { background: #fbbf24; }
+  .pitch-player-dot.rating-poor { background: #f87171; }
+  .pitch-player-dot.rating-none { background: #e2e8f0; }
+  .pitch-player-badges { display: flex; gap: 2px; height: 11px; align-items: center; }
+  .pitch-badge { font-size: 0.65rem; line-height: 1; }
+  .pitch-badge-yellow, .pitch-badge-red { width: 6px; height: 9px; border-radius: 1px; display: inline-block; }
+  .pitch-badge-yellow { background: #fbbf24; }
+  .pitch-badge-red { background: var(--red); }
+  .pitch-player-name {
+    font-size: 0.72rem; font-weight: 700; color: #fff; text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,.95); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; width: 100%; line-height: 1.15;
+  }
+  .pitch-player-rating {
+    font-size: 0.68rem; font-weight: 800; padding: 1px 5px; border-radius: 4px;
+    line-height: 1.3; white-space: nowrap;
+  }
+  .xg-val { font-size: 0.8rem; font-weight: 700; color: var(--accent3); }
+  .xg-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .xg-row-forecast { border-top: 1px dashed var(--border); }
+  .xg-val-forecast { color: #a78bfa; }
+  .form-dots { display: flex; gap: 3px; justify-content: center; margin-top: 4px; }
+  .form-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .form-w { background: var(--accent2); }
+  .form-d { background: #6b7280; }
+  .form-l { background: var(--red); }
+
+  /* GROUP TABLE */
+  .group-section { margin-bottom: 24px; }
+  .group-label { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { padding: 8px 10px; text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+  td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.03); }
+  .rank-1, .rank-2 { font-weight: 700; }
+  .qualify-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .q-direct { background: var(--accent2); }
+  .q-maybe { background: var(--accent3); }
+  .q-out { background: var(--red); }
+  .pts-badge { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; }
+  .team-flag-big { font-size: 4rem; }
+
+  /* STATS BARS */
+  .stat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; }
+  .stat-bar-label { width: 120px; color: var(--muted); }
+  .stat-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 4px; }
+  .stat-bar-val { width: 35px; text-align: right; font-weight: 600; }
+
+  /* PREDICTION METER */
+  .predict-meter { margin: 12px 0; }
+  .predict-teams { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+  .predict-track { height: 12px; border-radius: 6px; overflow: hidden; display: flex; }
+  .predict-a { background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 1s; }
+  .predict-draw { background: #374151; transition: width 1s; }
+  .predict-b { background: linear-gradient(90deg, #f87171, #ef4444); transition: width 1s; }
+  .predict-labels { display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 4px; font-weight: 700; }
+
+  /* TABS inside section */
+  .inner-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  .inner-tab { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 0.82rem; transition: all .2s; }
+  .inner-tab.active { background: var(--card2); border-color: var(--accent); color: var(--text); }
+
+  /* SEARCH */
+  .search-box { width: 100%; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 0.9rem; margin-bottom: 16px; outline: none; }
+  .search-box:focus { border-color: var(--accent); }
+
+  /* CHAMPIONSHIP ODDS */
+  .odds-card { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+  .odds-rank { font-size: 1.2rem; font-weight: 800; color: var(--muted); width: 28px; }
+  .odds-flag { font-size: 1.6rem; }
+  .odds-name { font-weight: 700; flex: 1; }
+  .odds-pct { font-size: 1rem; font-weight: 800; color: var(--accent3); }
+  .odds-bar-wrap { flex: 2; }
+  .odds-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .odds-bar-fill { height: 100%; background: linear-gradient(90deg,#f59e0b,#fbbf24); border-radius: 4px; }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* RESPONSIVE */
+  @media(max-width:600px) {
+    main { padding: 12px; }
+    .team-flag { font-size: 1.5rem; }
+    .score { font-size: 1.4rem; }
+  }
+
+  .update-time { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 12px; }
+  .section-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .tip-box { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); border-radius: 10px; padding: 12px 16px; font-size: 0.82rem; color: #93c5fd; margin-bottom: 16px; }
+
+  /* MATCH MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(5,8,15,.75);
+    backdrop-filter: blur(3px); z-index: 100; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    max-width: 1100px; width: 100%; padding: 24px; position: relative; margin-bottom: 40px;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; background: var(--card2); border: 1px solid var(--border);
+    color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: var(--border); }
+  .modal-header { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 8px; padding-right: 30px; }
+  .modal-team { text-align: center; flex: 1; }
+  .modal-team .team-flag-big { font-size: 2.6rem; }
+  .modal-team-name { font-weight: 700; font-size: 0.95rem; margin-top: 4px; }
+  .modal-vs { font-size: 0.85rem; color: var(--muted); font-weight: 700; }
+  .modal-meta { text-align: center; font-size: 0.78rem; color: var(--muted); margin-bottom: 20px; }
+  .modal-xg-line {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; margin-top: 4px; margin-bottom: 4px;
+  }
+  .modal-xg-line .xg-val { font-size: 0.95rem; font-weight: 800; color: var(--accent3); }
+  .modal-xg-line .xg-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚽</div>
+    <div>
+      <h1>WM 2026 Analyser <span class="by-credit">by Wechen</span></h1>
+      <p>Kanada · Mexiko · USA</p>
+    </div>
+  </div>
+  <div class="live-badge"><span class="live-dot"></span> LIVE – Spieltag 2</div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('dashboard')">🏠 Dashboard</button>
+  <button onclick="showSection('matches')">📅 Alle Spiele</button>
+  <button onclick="showSection('groups')">📊 Gruppen</button>
+  <button onclick="showSection('predictions')">🎯 WM-Sieg</button>
+</nav>
+
+<main>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboard" class="section active">
+  <div class="update-time" id="updateTime"></div>
+  <div class="tip-box" id="liveStatusBox">📡 Daten Stand: 19. Juni 2026 – Spieltag 2 läuft. Spielplan & Ergebnisse abgeglichen mit Flashscore, Sofascore, LiveScore & kicker.de. Spiel-Quoten basieren auf entvigten Buchmacher-Quoten (oddschecker), WM-Sieg-Quoten auf Sofascore Power Rankings. <strong id="liveStatusText">🔄 Live-Update wird geladen…</strong></div>
+
+  <div class="section-title">🔴 Heutige Spiele</div>
+  <div id="todayMatches" class="grid-2"></div>
+
+  <div class="divider"></div>
+  <div class="grid-2">
+    <div>
+      <div class="section-title">⚽ Top 5 Torschützen</div>
+      <div id="topScorers"></div>
+    </div>
+    <div>
+      <div class="section-title">🅰️ Top 5 Assists</div>
+      <div id="topAssists"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-title">⚡ Highlights</div>
+  <div class="grid-4" id="highlights"></div>
+</div>
+
+<!-- ===== MATCHES ===== -->
+<div id="matches" class="section">
+  <div class="section-title">📅 Alle Spiele – chronologisch</div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="filterMatches('all',this)">Alle</button>
+    <button class="inner-tab" onclick="filterMatches('live',this)">🔴 Live</button>
+    <button class="inner-tab" onclick="filterMatches('done',this)">✅ Beendet</button>
+    <button class="inner-tab" onclick="filterMatches('soon',this)">🕐 Bald</button>
+  </div>
+  <div id="allMatchesGrid" class="grid-2"></div>
+</div>
+
+<!-- ===== GROUPS ===== -->
+<div id="groups" class="section">
+  <div class="section-title">📊 Gruppenphase – Alle Tabellen</div>
+  <div class="grid-2" id="groupTables"></div>
+</div>
+
+<!-- ===== PREDICTIONS ===== -->
+<div id="predictions" class="section">
+  <div class="section-title">🏆 WM-Sieg Wahrscheinlichkeit</div>
+  <div class="tip-box">📊 Einzelspiel-Wahrscheinlichkeiten (Spielkarten & xG-Prognose) basieren auf <strong>entvigten Quoten mehrerer Buchmacher</strong> (oddschecker-Konsens), abgeglichen mit den Sofascore Power Rankings als Cross-Check. Die WM-Sieg-Quoten unten (Turniersieger) basieren weiterhin auf den Sofascore Power Rankings + bisheriger xG-Form.</div>
+  <div id="predList"></div>
+</div>
+
+</main>
+
+<div class="modal-overlay" id="matchModal" onclick="if(event.target===this) closeMatchModal()">
+  <div class="modal-box" id="matchModalBox"></div>
+</div>
+
+
+<script>
+// ========== DATA ==========
+
+const MATCHES = [
+  // SPIELTAG 1 (abgeschlossen)
+  { id:1, group:'A', home:'Mexiko', away:'Südafrika', homeFlag:'🇲🇽', awayFlag:'🇿🇦', homeScore:2, awayScore:0, status:'done', xgHome:1.41, xgAway:0.07, date:'11.06.', time:'21:00', venue:'Estadio Azteca, Mexico City', homeForm:['W','W','W','D','W'], awayForm:['D','L','W','D','L'] },
+  { id:2, group:'A', home:'Südkorea', away:'Tschechien', homeFlag:'🇰🇷', awayFlag:'🇨🇿', homeScore:2, awayScore:1, status:'done', xgHome:1.84, xgAway:0.81, date:'12.06.', time:'03:00', venue:'Estadio AKRON, Zapopan', homeForm:['W','W','D','W','L'], awayForm:['W','D','L','W','D'] },
+  { id:3, group:'B', home:'Kanada', away:'Bosnien', homeFlag:'🇨🇦', awayFlag:'🇧🇦', homeScore:1, awayScore:1, status:'done', xgHome:1.25, xgAway:0.98, date:'12.06.', time:'21:00', venue:'BMO Field, Toronto', homeForm:['W','W','D','W','W'], awayForm:['W','L','D','L','W'] },
+  { id:4, group:'B', home:'Katar', away:'Schweiz', homeFlag:'🇶🇦', awayFlag:'🇨🇭', homeScore:1, awayScore:1, status:'done', xgHome:0.76, xgAway:3.24, date:'13.06.', time:'21:00', venue:'Levi\'s Stadium, Santa Clara', homeForm:['L','L','D','L','L'], awayForm:['W','W','W','D','W'] },
+  { id:5, group:'C', home:'Brasilien', away:'Marokko', homeFlag:'🇧🇷', awayFlag:'🇲🇦', homeScore:1, awayScore:1, status:'done', xgHome:1.23, xgAway:1.53, date:'14.06.', time:'00:00', venue:'MetLife Stadium, East Rutherford', homeForm:['W','W','D','W','W'], awayForm:['W','D','W','W','D'] },
+  { id:6, group:'C', home:'Haiti', away:'Schottland', homeFlag:'🇭🇹', awayFlag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', homeScore:0, awayScore:1, status:'done', xgHome:1.21, xgAway:1.05, date:'14.06.', time:'03:00', venue:'Gillette Stadium, Foxborough', homeForm:['L','D','L','L','D'], awayForm:['W','W','D','W','W'] },
+  { id:7, group:'D', home:'USA', away:'Paraguay', homeFlag:'🇺🇸', awayFlag:'🇵🇾', homeScore:4, awayScore:1, status:'done', xgHome:1.35, xgAway:0.47, date:'13.06.', time:'19:00', venue:'SoFi Stadium', homeForm:['W','W','W','D','W'], awayForm:['D','L','W','L','D'] },
+  { id:8, group:'D', home:'Australien', away:'Türkei', homeFlag:'🇦🇺', awayFlag:'🇹🇷', homeScore:2, awayScore:0, status:'done', xgHome:0.77, xgAway:1.33, date:'14.06.', time:'06:00', venue:'BC Place, Vancouver', homeForm:['W','D','W','W','L'], awayForm:['W','W','D','W','L'] },
+  { id:9, group:'E', home:'Deutschland', away:'Curaçao', homeFlag:'🇩🇪', awayFlag:'🇨🇼', homeScore:7, awayScore:1, status:'done', xgHome:4.22, xgAway:0.41, date:'14.06.', time:'19:00', venue:'NRG Stadium, Houston', homeForm:['W','W','W','W','D'], awayForm:['L','L','D','L','L'] },
+  { id:10, group:'E', home:'Elfenbeinküste', away:'Ecuador', homeFlag:'🇨🇮', awayFlag:'🇪🇨', homeScore:1, awayScore:0, status:'done', xgHome:1.68, xgAway:1.03, date:'15.06.', time:'21:00', venue:'Lincoln Financial Field, Philadelphia', homeForm:['W','D','W','W','L'], awayForm:['W','D','D','W','L'] },
+  { id:11, group:'F', home:'Niederlande', away:'Japan', homeFlag:'🇳🇱', awayFlag:'🇯🇵', homeScore:2, awayScore:2, status:'done', xgHome:0.78, xgAway:0.59, date:'14.06.', time:'21:00', venue:'AT&T Stadium, Arlington', homeForm:['W','W','D','W','W'], awayForm:['W','W','W','D','W'] },
+  { id:12, group:'F', home:'Schweden', away:'Tunesien', homeFlag:'🇸🇪', awayFlag:'🇹🇳', homeScore:5, awayScore:1, status:'done', xgHome:1.36, xgAway:0.28, date:'15.06.', time:'21:00', venue:'Estadio BBVA Bancomer, Guadalupe', homeForm:['W','W','W','D','W'], awayForm:['L','D','L','L','L'] },
+  { id:13, group:'G', home:'Belgien', away:'Ägypten', homeFlag:'🇧🇪', awayFlag:'🇪🇬', homeScore:1, awayScore:1, status:'done', xgHome:1.35, xgAway:1.08, date:'15.06.', time:'21:00', venue:'Lumen Field, Seattle', homeForm:['D','W','W','D','L'], awayForm:['W','D','W','D','L'] },
+  { id:14, group:'G', home:'Iran', away:'Neuseeland', homeFlag:'🇮🇷', awayFlag:'🇳🇿', homeScore:2, awayScore:2, status:'done', xgHome:1.5, xgAway:1.24, date:'16.06.', time:'21:00', venue:'SoFi Stadium', homeForm:['W','W','D','W','D'], awayForm:['W','D','L','W','D'] },
+  { id:15, group:'H', home:'Spanien', away:'Kap Verde', homeFlag:'🇪🇸', awayFlag:'🇨🇻', homeScore:0, awayScore:0, status:'done', xgHome:2.29, xgAway:0.3, date:'15.06.', time:'21:00', venue:'Hard Rock Stadium, Miami Gardens', homeForm:['W','W','D','W','W'], awayForm:['W','D','W','D','W'] },
+  { id:16, group:'H', home:'Saudi-Arabien', away:'Uruguay', homeFlag:'🇸🇦', awayFlag:'🇺🇾', homeScore:1, awayScore:1, status:'done', xgHome:0.99, xgAway:1.54, date:'16.06.', time:'21:00', venue:'Hard Rock Stadium, Miami Gardens', homeForm:['W','D','D','W','L'], awayForm:['W','D','W','W','D'] },
+  { id:17, group:'I', home:'Frankreich', away:'Senegal', homeFlag:'🇫🇷', awayFlag:'🇸🇳', homeScore:3, awayScore:1, status:'done', xgHome:1.79, xgAway:0.56, date:'16.06.', time:'21:00', venue:'MetLife Stadium, East Rutherford', homeForm:['W','W','W','D','W'], awayForm:['W','D','W','W','L'] },
+  { id:18, group:'I', home:'Irak', away:'Norwegen', homeFlag:'🇮🇶', awayFlag:'🇳🇴', homeScore:1, awayScore:4, status:'done', xgHome:0.77, xgAway:2.53, date:'17.06.', time:'00:00', venue:'Gillette Stadium, Foxborough', homeForm:['L','D','L','D','L'], awayForm:['W','W','W','W','W'] },
+  { id:19, group:'J', home:'Argentinien', away:'Algerien', homeFlag:'🇦🇷', awayFlag:'🇩🇿', homeScore:3, awayScore:0, status:'done', xgHome:1.23, xgAway:0.31, date:'17.06.', time:'03:00', venue:'Arrowhead Stadium, Kansas City', homeForm:['W','W','W','W','W'], awayForm:['D','W','D','L','W'] },
+  { id:20, group:'J', home:'Österreich', away:'Jordanien', homeFlag:'🇦🇹', awayFlag:'🇯🇴', homeScore:3, awayScore:1, status:'done', xgHome:1.66, xgAway:0.53, date:'17.06.', time:'06:00', venue:'Levi\'s Stadium, Santa Clara', homeForm:['W','W','D','W','W'], awayForm:['L','D','W','L','D'] },
+  { id:21, group:'K', home:'Portugal', away:'DR Kongo', homeFlag:'🇵🇹', awayFlag:'🇨🇩', homeScore:1, awayScore:1, status:'done', xgHome:0.64, xgAway:0.82, date:'17.06.', time:'19:00', venue:'NRG Stadium, Houston', homeForm:['W','W','W','D','W'], awayForm:['W','D','W','D','L'] },
+  { id:22, group:'K', home:'Usbekistan', away:'Kolumbien', homeFlag:'🇺🇿', awayFlag:'🇨🇴', homeScore:1, awayScore:3, status:'done', xgHome:1.16, xgAway:1.62, date:'18.06.', time:'04:00', venue:'Estadio Azteca, Mexico City', homeForm:['W','D','L','W','D'], awayForm:['W','W','W','D','W'] },
+  { id:23, group:'L', home:'England', away:'Kroatien', homeFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', awayFlag:'🇭🇷', homeScore:4, awayScore:2, status:'done', xgHome:2.8, xgAway:0.71, date:'17.06.', time:'22:00', venue:'AT&T Stadium, Arlington', homeForm:['W','W','W','D','W'], awayForm:['W','D','L','W','D'] },
+  { id:24, group:'L', home:'Ghana', away:'Panama', homeFlag:'🇬🇭', awayFlag:'🇵🇦', homeScore:1, awayScore:0, status:'done', xgHome:1.31, xgAway:0.75, date:'18.06.', time:'01:00', venue:'BMO Field, Toronto', homeForm:['W','W','D','D','W'], awayForm:['D','L','D','W','D'] },
+  // SPIELTAG 2
+  { id:25, group:'A', home:'Tschechien', away:'Südafrika', homeFlag:'🇨🇿', awayFlag:'🇿🇦', homeScore:1, awayScore:1, status:'done', xgHome:1.02, xgAway:1.39, date:'18.06.', time:'18:00', venue:'Mercedes-Benz Stadium, Atlanta', homeForm:['W','D','L','W','D'], awayForm:['D','L','W','D','L'] },
+  { id:26, group:'A', home:'Mexiko', away:'Südkorea', homeFlag:'🇲🇽', awayFlag:'🇰🇷', homeScore:1, awayScore:0, status:'done', xgHome:0.48, xgAway:0.69, date:'19.06.', time:'03:00', venue:'Estadio AKRON, Zapopan', homeForm:['W','W','W','D','W'], awayForm:['W','W','D','W','L'] },
+  { id:27, group:'B', home:'Schweiz', away:'Bosnien', homeFlag:'🇨🇭', awayFlag:'🇧🇦', homeScore:4, awayScore:1, status:'done', xgHome:2.06, xgAway:0.23, date:'18.06.', time:'21:00', venue:'SoFi Stadium', homeForm:['W','W','W','D','W'], awayForm:['W','L','D','L','W'] },
+  { id:28, group:'B', home:'Kanada', away:'Katar', homeFlag:'🇨🇦', awayFlag:'🇶🇦', homeScore:3, awayScore:0, status:'done', xgHome:4.75, xgAway:0.18, date:'19.06.', time:'00:00', venue:'BC Place, Vancouver', homeForm:['W','W','D','W','W'], awayForm:['L','L','D','L','L'] },
+  { id:29, group:'C', home:'Schottland', away:'Marokko', homeFlag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', awayFlag:'🇲🇦', homeScore:0, awayScore:1, status:'done', xgHome:0.54, xgAway:0.97, date:'20.06.', time:'00:00', venue:'Gillette Stadium, Boston', homeForm:['W','W','D','W','W'], awayForm:['W','D','W','W','D'] },
+  { id:30, group:'C', home:'Brasilien', away:'Haiti', homeFlag:'🇧🇷', awayFlag:'🇭🇹', homeScore:3, awayScore:0, status:'done', xgHome:1.5, xgAway:0.23, date:'20.06.', time:'02:30', venue:'Lincoln Financial Field, Philadelphia', homeForm:['W','W','D','W','W'], awayForm:['L','D','L','L','D'] },
+  { id:31, group:'D', home:'USA', away:'Australien', homeFlag:'🇺🇸', awayFlag:'🇦🇺', homeScore:2, awayScore:0, status:'done', xgHome:1.30, xgAway:0.32, date:'19.06.', time:'21:00', venue:'Lumen Field, Seattle', homeForm:['W','W','W','D','W'], awayForm:['W','D','W','W','L'] },
+  { id:32, group:'D', home:'Türkei', away:'Paraguay', homeFlag:'🇹🇷', awayFlag:'🇵🇾', homeScore:0, awayScore:1, status:'done', xgHome:2.10, xgAway:0.32, date:'20.06.', time:'05:00', venue:'Levi\'s Stadium, Santa Clara', homeForm:['W','W','D','W','L'], awayForm:['D','L','W','L','D'] },
+  { id:33, group:'E', home:'Deutschland', away:'Elfenbeinküste', homeFlag:'🇩🇪', awayFlag:'🇨🇮', homeScore:null, awayScore:null, status:'soon', bookProb:{win:63,draw:21,lose:16}, date:'20.06.', time:'22:00', venue:'BMO Field, Toronto', homeForm:['W','W','W','W','D'], awayForm:['W','D','W','W','L'] },
+  { id:34, group:'E', home:'Ecuador', away:'Curaçao', homeFlag:'🇪🇨', awayFlag:'🇨🇼', homeScore:null, awayScore:null, status:'soon', bookProb:{win:87,draw:9,lose:4}, date:'21.06.', time:'02:00', venue:'Arrowhead Stadium, Kansas City', homeForm:['W','D','D','W','L'], awayForm:['L','L','D','L','L'] },
+  { id:35, group:'F', home:'Niederlande', away:'Schweden', homeFlag:'🇳🇱', awayFlag:'🇸🇪', homeScore:null, awayScore:null, status:'soon', bookProb:{win:55,draw:25,lose:20}, date:'20.06.', time:'19:00', venue:'NRG Stadium, Houston', homeForm:['W','W','D','W','W'], awayForm:['W','W','W','D','W'] },
+  { id:36, group:'F', home:'Tunesien', away:'Japan', homeFlag:'🇹🇳', awayFlag:'🇯🇵', homeScore:null, awayScore:null, status:'soon', bookProb:{win:14,draw:23,lose:63}, date:'21.06.', time:'06:00', venue:'Estadio BBVA Bancomer, Guadalupe', homeForm:['L','D','L','L','L'], awayForm:['W','W','W','D','W'] },
+  { id:37, group:'G', home:'Belgien', away:'Iran', homeFlag:'🇧🇪', awayFlag:'🇮🇷', homeScore:null, awayScore:null, status:'soon', bookProb:{win:66,draw:21,lose:13}, date:'21.06.', time:'21:00', venue:'SoFi Stadium', homeForm:['D','W','W','D','L'], awayForm:['W','W','D','W','D'] },
+  { id:38, group:'G', home:'Neuseeland', away:'Ägypten', homeFlag:'🇳🇿', awayFlag:'🇪🇬', homeScore:null, awayScore:null, status:'soon', bookProb:{win:17,draw:23,lose:60}, date:'22.06.', time:'03:00', venue:'BC Place, Vancouver', homeForm:['W','D','L','W','D'], awayForm:['W','D','W','D','L'] },
+  { id:39, group:'H', home:'Spanien', away:'Saudi-Arabien', homeFlag:'🇪🇸', awayFlag:'🇸🇦', homeScore:null, awayScore:null, status:'soon', bookProb:{win:87,draw:9,lose:4}, date:'21.06.', time:'18:00', venue:'Mercedes-Benz Stadium, Atlanta', homeForm:['W','W','D','W','W'], awayForm:['W','D','D','W','L'] },
+  { id:40, group:'H', home:'Uruguay', away:'Kap Verde', homeFlag:'🇺🇾', awayFlag:'🇨🇻', homeScore:null, awayScore:null, status:'soon', bookProb:{win:65,draw:23,lose:12}, date:'22.06.', time:'00:00', venue:'Hard Rock Stadium, Miami Gardens', homeForm:['W','D','W','W','D'], awayForm:['W','D','W','D','W'] },
+  { id:41, group:'I', home:'Frankreich', away:'Irak', homeFlag:'🇫🇷', awayFlag:'🇮🇶', homeScore:null, awayScore:null, status:'soon', bookProb:{win:89,draw:8,lose:3}, date:'22.06.', time:'23:00', venue:'Lincoln Financial Field, Philadelphia', homeForm:['W','W','W','D','W'], awayForm:['L','D','L','D','L'] },
+  { id:42, group:'I', home:'Norwegen', away:'Senegal', homeFlag:'🇳🇴', awayFlag:'🇸🇳', homeScore:null, awayScore:null, status:'soon', bookProb:{win:41,draw:28,lose:31}, date:'23.06.', time:'02:00', venue:'MetLife Stadium, East Rutherford', homeForm:['W','W','W','W','W'], awayForm:['W','D','W','W','L'] },
+  { id:43, group:'J', home:'Argentinien', away:'Österreich', homeFlag:'🇦🇷', awayFlag:'🇦🇹', homeScore:null, awayScore:null, status:'soon', bookProb:{win:60,draw:24,lose:16}, date:'22.06.', time:'19:00', venue:'AT&T Stadium, Dallas', homeForm:['W','W','W','W','W'], awayForm:['W','W','D','W','W'] },
+  { id:44, group:'J', home:'Jordanien', away:'Algerien', homeFlag:'🇯🇴', awayFlag:'🇩🇿', homeScore:null, awayScore:null, status:'soon', bookProb:{win:16,draw:23,lose:61}, date:'23.06.', time:'05:00', venue:'Levi\'s Stadium, Santa Clara', homeForm:['L','D','W','L','D'], awayForm:['D','W','D','L','W'] },
+  { id:45, group:'K', home:'Portugal', away:'Usbekistan', homeFlag:'🇵🇹', awayFlag:'🇺🇿', homeScore:null, awayScore:null, status:'soon', bookProb:{win:80,draw:14,lose:6}, date:'23.06.', time:'19:00', venue:'NRG Stadium, Houston', homeForm:['W','W','W','D','W'], awayForm:['W','D','L','W','D'] },
+  { id:46, group:'K', home:'Kolumbien', away:'DR Kongo', homeFlag:'🇨🇴', awayFlag:'🇨🇩', homeScore:null, awayScore:null, status:'soon', bookProb:{win:65,draw:23,lose:13}, date:'24.06.', time:'04:00', venue:'Estadio Azteca, Mexico City', homeForm:['W','W','W','D','W'], awayForm:['W','D','W','D','L'] },
+  { id:47, group:'L', home:'England', away:'Ghana', homeFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', awayFlag:'🇬🇭', homeScore:null, awayScore:null, status:'soon', bookProb:{win:79,draw:15,lose:6}, date:'23.06.', time:'22:00', venue:'Gillette Stadium, Boston', homeForm:['W','W','W','D','W'], awayForm:['W','W','D','D','W'] },
+  { id:48, group:'L', home:'Panama', away:'Kroatien', homeFlag:'🇵🇦', awayFlag:'🇭🇷', homeScore:null, awayScore:null, status:'soon', bookProb:{win:15,draw:23,lose:62}, date:'24.06.', time:'01:00', venue:'BMO Field, Toronto', homeForm:['D','L','D','W','D'], awayForm:['W','D','L','W','D'] },
+  // SPIELTAG 3
+  { id:49, group:'A', home:'Tschechien', away:'Mexiko', homeFlag:'🇨🇿', awayFlag:'🇲🇽', homeScore:null, awayScore:null, status:'soon', bookProb:{win:31,draw:27,lose:43}, date:'25.06.', time:'03:00', venue:'Estadio Azteca, Mexico City', homeForm:['W','D','L','W','D'], awayForm:['W','W','W','D','W'] },
+  { id:50, group:'A', home:'Südafrika', away:'Südkorea', homeFlag:'🇿🇦', awayFlag:'🇰🇷', homeScore:null, awayScore:null, status:'soon', bookProb:{win:17,draw:24,lose:59}, date:'25.06.', time:'03:00', venue:'Estadio BBVA Bancomer, Guadalupe', homeForm:['D','L','W','D','L'], awayForm:['W','W','D','W','L'] },
+  { id:51, group:'B', home:'Schweiz', away:'Kanada', homeFlag:'🇨🇭', awayFlag:'🇨🇦', homeScore:null, awayScore:null, status:'soon', bookProb:{win:39,draw:31,lose:30}, date:'24.06.', time:'21:00', venue:'BC Place, Vancouver', homeForm:['W','W','W','D','W'], awayForm:['W','W','D','W','W'] },
+  { id:52, group:'B', home:'Bosnien', away:'Katar', homeFlag:'🇧🇦', awayFlag:'🇶🇦', homeScore:null, awayScore:null, status:'soon', bookProb:{win:68,draw:19,lose:12}, date:'24.06.', time:'21:00', venue:'Lumen Field, Seattle', homeForm:['W','L','D','L','W'], awayForm:['L','L','D','L','L'] },
+  { id:53, group:'C', home:'Schottland', away:'Brasilien', homeFlag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', awayFlag:'🇧🇷', homeScore:null, awayScore:null, status:'soon', bookProb:{win:14,draw:19,lose:67}, date:'25.06.', time:'00:00', venue:'Hard Rock Stadium, Miami Gardens', homeForm:['W','W','D','W','W'], awayForm:['W','W','D','W','W'] },
+  { id:54, group:'C', home:'Marokko', away:'Haiti', homeFlag:'🇲🇦', awayFlag:'🇭🇹', homeScore:null, awayScore:null, status:'soon', bookProb:{win:75,draw:16,lose:9}, date:'25.06.', time:'00:00', venue:'Mercedes-Benz Stadium, Atlanta', homeForm:['W','D','W','W','D'], awayForm:['L','D','L','L','D'] },
+];
+
+
+// ========== SPIELBERICHTE (Startelf, Bank, Karten, Tore/Assists, Noten) ==========
+// Key = MATCHES id. Nur für bereits recherchierte Spiele vorhanden - fehlt der Eintrag,
+// zeigt das Modal einen Hinweis statt falscher/erfundener Daten.
+// number: Trikotnummer (nur wo sicher recherchiert, sonst weggelassen)
+// rating: Sofascore-Note 0.0-10.0 (nur für eingesetzte Spieler: Start + eingewechselt)
+// sub: { in: Minute, out: Minute } bei Wechseln; card: 'yellow'|'red'|'yellow-red'
+// goals/assists: Anzahl in diesem Spiel
+const MATCH_LINEUPS = {
+  1: { // Mexiko 2:0 Südafrika - Quelle: Goal.com, Sofascore (Stand 11.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Luis Malagón', pos:'TW', rating:6.5 },
+        { name:'Israel Reyes', pos:'RV', rating:6.8, assists:1 },
+        { name:'César Montes', pos:'IV', rating:5.8, card:'red' },
+        { name:'Johan Vázquez', pos:'IV', rating:6.7 },
+        { name:'Jesús Gallardo', pos:'LV', rating:6.9 },
+        { name:'Edson Álvarez', pos:'ZM', rating:7.0 },
+        { name:'Erik Lira', pos:'ZM', rating:7.3, assists:1, sub:{out:70} },
+        { name:'Obed Vargas', pos:'ZM', rating:6.6 },
+        { name:'Julián Quiñones', pos:'RA', rating:8.6, goals:1, sub:{out:78} },
+        { name:'Raúl Jiménez', pos:'ST', rating:7.6, goals:1, sub:{out:85} },
+        { name:'Bryan González', pos:'LA', rating:6.4 },
+      ],
+      bench: [
+        { name:'Alexis Vega', pos:'AM', sub:{in:78} },
+        { name:'Gilberto Mora', pos:'ZM', sub:{in:70} },
+        { name:'Armando González', pos:'ST', sub:{in:85} },
+      ],
+      cards: ['César Montes (Rot, 90+)'],
+    },
+    away: {
+      startXI: [
+        { name:'Ronwen Williams', pos:'TW', rating:7.1 },
+        { name:'Khuliso Mudau', pos:'RV', rating:5.9 },
+        { name:'Mbekezeli Mbokazi', pos:'IV', rating:5.7 },
+        { name:'Ime Okon', pos:'IV', rating:5.6 },
+        { name:'Aubrey Modiba', pos:'LV', rating:5.8, sub:{out:46} },
+        { name:'Teboho Mokoena', pos:'ZM', rating:6.0 },
+        { name:'Sphephelo Sithole', pos:'ZM', rating:4.9, card:'red', sub:{out:49} },
+        { name:'Thapelo Maseko', pos:'OM', rating:5.7 },
+        { name:'Themba Zwane', pos:'OM', rating:5.4, card:'red' },
+        { name:'Iqraam Rayners', pos:'ST', rating:5.8, sub:{out:60} },
+        { name:'Lyle Foster', pos:'ST', rating:6.1 },
+      ],
+      bench: [
+        { name:'Oswin Appollis', pos:'RA', sub:{in:46} },
+        { name:'Elias Makgopa', pos:'ST', sub:{in:60} },
+      ],
+      cards: ['Sphephelo Sithole (Rot, 49\')', 'Themba Zwane (Rot, 90+)'],
+    },
+  },
+  2: { // Südkorea 2:1 Tschechien - Quelle: FOX Sports, Sofascore, FotMob (Stand 11.06.2026)
+    homeFormation: '3-4-2-1',
+    awayFormation: '3-4-2-1',
+    home: {
+      startXI: [
+        { name:'Seung-gyu Kim', pos:'TW', rating:7.0 },
+        { name:'Han-beom Lee', pos:'IV', rating:6.5 },
+        { name:'Min-jae Kim', pos:'IV', rating:6.8 },
+        { name:'Gi-hyuk Lee', pos:'IV', rating:6.0, card:'yellow' },
+        { name:'Young-woo Seol', pos:'RM', rating:6.4 },
+        { name:'In-beom Hwang', pos:'ZM', rating:8.2, goals:1, assists:1, sub:{out:84} },
+        { name:'Seung-ho Paik', pos:'ZM', rating:6.3, sub:{out:84} },
+        { name:'Tae-seok Lee', pos:'LM', rating:6.2 },
+        { name:'Kang-in Lee', pos:'OM', rating:7.0 },
+        { name:'Jae-sung Lee', pos:'OM', rating:6.5 },
+        { name:'Heung-min Son', pos:'ST', rating:6.9 },
+      ],
+      bench: [
+        { name:'Jin-seob Park', pos:'ZM', sub:{in:84} },
+        { name:'Jin-gyu Kim', pos:'ST', goals:1, sub:{in:84} },
+      ],
+      cards: ['Gi-hyuk Lee (Gelb, 90+6\')'],
+    },
+    away: {
+      startXI: [
+        { name:'Matěj Kovář', pos:'TW', rating:6.2 },
+        { name:'Štěpán Chaloupek', pos:'IV', rating:5.8 },
+        { name:'Robin Hranáč', pos:'IV', rating:6.0 },
+        { name:'Ladislav Krejčí', pos:'IV', rating:6.1 },
+        { name:'Vladimír Coufal', pos:'RM', rating:6.3 },
+        { name:'Tomáš Souček', pos:'ZM', rating:6.4 },
+        { name:'Alexandr Sojka', pos:'ZM', rating:6.0, sub:{out:85} },
+        { name:'Jaroslav Zelený', pos:'LM', rating:6.2 },
+        { name:'Lukáš Provod', pos:'OM', rating:6.3 },
+        { name:'Pavel Šulc', pos:'OM', rating:6.5 },
+        { name:'Patrik Schick', pos:'ST', rating:6.4 },
+      ],
+      bench: [
+        { name:'Matěj Chytil', pos:'ZM', sub:{in:85} },
+        { name:'Adam Hložek', pos:'ST', rating:6.6 },
+        { name:'Michal Sadílek', pos:'ZM', rating:6.7, goals:1, sub:{in:46} },
+      ],
+      cards: [],
+    },
+  },
+  3: { // Kanada 1:1 Bosnien - Quelle: Sofascore, FotMob (Stand 12.06.2026)
+    homeFormation: '4-4-2',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Maxime Crépeau', pos:'TW', rating:6.4 },
+        { name:'Alistair Johnston', pos:'RV', rating:6.3 },
+        { name:'Luc de Fougerolles', pos:'IV', rating:6.0 },
+        { name:'Derek Cornelius', pos:'IV', rating:6.1 },
+        { name:'Richie Laryea', pos:'LV', rating:6.2 },
+        { name:'Tajon Buchanan', pos:'RM', rating:6.5, sub:{out:75} },
+        { name:'Ismaël Koné', pos:'ZM', rating:6.6 },
+        { name:'Stephen Eustaquio', pos:'ZM', rating:6.4, card:'yellow' },
+        { name:'Liam Millar', pos:'LM', rating:6.3, sub:{out:75} },
+        { name:'Jonathan David', pos:'ST', rating:7.4, goals:1 },
+        { name:'Tani Oluwaseyi', pos:'ST', rating:6.5, sub:{out:60} },
+      ],
+      bench: [
+        { name:'Cyle Larin', pos:'ST', sub:{in:60} },
+        { name:'Promise David', pos:'ST', sub:{in:75} },
+        { name:'Jacen Russell-Rowe', pos:'RA', sub:{in:75} },
+      ],
+      cards: ['Stephen Eustaquio (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Nikola Vasilj', pos:'TW', rating:6.8 },
+        { name:'Riad Bajić', pos:'RV', rating:6.0 },
+        { name:'Nemanja Bilbija', pos:'IV', rating:6.2 },
+        { name:'Toni Šunjić', pos:'IV', rating:6.3 },
+        { name:'Dorde Burnić', pos:'LV', rating:6.0, card:'yellow' },
+        { name:'Sead Kolašinac', pos:'ZM', rating:6.4 },
+        { name:'Anel Gigović', pos:'ZM', rating:6.1, sub:{out:80} },
+        { name:'Amar Memić', pos:'RM', rating:6.0 },
+        { name:'Kenan Alajbegović', pos:'OM', rating:6.5 },
+        { name:'Ermin Bajraktarević', pos:'OM', rating:6.6, sub:{out:70} },
+        { name:'Ivan Bašić', pos:'ST', rating:6.8, goals:1 },
+      ],
+      bench: [
+        { name:'Smail Prevljak', pos:'ST', sub:{in:70} },
+        { name:'Said Hamulić', pos:'ST', sub:{in:80} },
+      ],
+      cards: ['Dorde Burnić (Gelb)'],
+    },
+  },
+  4: { // Katar 1:1 Schweiz - Quelle: Opta/theanalyst, ESPN, Sky Sports (Stand 13.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Mahmud Abunada', pos:'TW', rating:6.5, card:'yellow' },
+        { name:'Ayoub Al Oui', pos:'RV', rating:6.0 },
+        { name:'Pedro Miguel', pos:'IV', rating:6.2 },
+        { name:'Boualem Khoukhi', pos:'IV', rating:8.4, goals:1 },
+        { name:'Homam Elamin', pos:'LV', rating:6.0 },
+        { name:'Jassem Gaber', pos:'ZM', rating:6.1 },
+        { name:'Assim Madibo', pos:'ZM', rating:6.2 },
+        { name:'Issa Laye', pos:'ZM', rating:5.9, sub:{out:70} },
+        { name:'Edmílson Junior', pos:'RA', rating:6.4 },
+        { name:'Yusuf Abdurisag', pos:'LA', rating:5.8, sub:{out:60} },
+        { name:'Akram Afif', pos:'ST', rating:6.0 },
+      ],
+      bench: [
+        { name:'Ahmed Al-Ganehi', pos:'LA', assists:1, sub:{in:60} },
+        { name:'Almoez Ali', pos:'ST', sub:{in:70} },
+      ],
+      cards: ['Mahmud Abunada (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Gregor Kobel', pos:'TW', rating:6.3 },
+        { name:'Denis Zakaria', pos:'IV', rating:6.0 },
+        { name:'Nico Elvedi', pos:'IV', rating:6.1 },
+        { name:'Manuel Akanji', pos:'IV', rating:5.6 },
+        { name:'Ricardo Rodríguez', pos:'LV', rating:6.0, sub:{out:80} },
+        { name:'Michel Aebischer', pos:'ZM', rating:6.2 },
+        { name:'Granit Xhaka', pos:'ZM', rating:6.4 },
+        { name:'Remo Freuler', pos:'ZM', rating:6.3 },
+        { name:'Dan Ndoye', pos:'RA', rating:6.1, sub:{out:75} },
+        { name:'Rubén Vargas', pos:'LA', rating:6.0 },
+        { name:'Breel Embolo', pos:'ST', rating:6.8, goals:1 },
+      ],
+      bench: [
+        { name:'Johan Manzambi', pos:'OM', sub:{in:75} },
+        { name:'Miro Muheim', pos:'LV', rating:4.8, sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  5: { // Brasilien 1:1 Marokko - Quelle: Sofascore, Sports Mole (Stand 13.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Alisson', pos:'TW', rating:6.0 },
+        { name:'Ibanez', pos:'RV', rating:4.0 },
+        { name:'Marquinhos', pos:'IV', rating:6.0 },
+        { name:'Éder Militão', pos:'IV', rating:5.5 },
+        { name:'Douglas Santos', pos:'LV', rating:6.0 },
+        { name:'Casemiro', pos:'ZM', rating:4.0, card:'yellow', sub:{out:46} },
+        { name:'Bruno Guimarães', pos:'ZM', rating:7.5, assists:1 },
+        { name:'Raphinha', pos:'RA', rating:6.5 },
+        { name:'Lucas Paquetá', pos:'OM', rating:6.0 },
+        { name:'Vinícius Júnior', pos:'LA', rating:8.0, goals:1 },
+        { name:'Igor Thiago', pos:'ST', rating:5.5, sub:{out:65} },
+      ],
+      bench: [
+        { name:'Matheus Cunha', pos:'ST', sub:{in:65} },
+        { name:'Andreas Pereira', pos:'ZM', sub:{in:46} },
+      ],
+      cards: ['Casemiro (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Yassine Bounou', pos:'TW', rating:6.5 },
+        { name:'Achraf Hakimi', pos:'RV', rating:6.0 },
+        { name:'Nayef Aguerd', pos:'IV', rating:6.5 },
+        { name:'Jawad El Yamiq', pos:'IV', rating:6.0 },
+        { name:'Yahia Attiyat Allah', pos:'LV', rating:6.0 },
+        { name:'Azzedine Ounahi', pos:'ZM', rating:6.5 },
+        { name:'Bilal El Khannouss', pos:'ZM', rating:6.0 },
+        { name:'Chemseddine Talbi', pos:'RA', rating:6.0 },
+        { name:'Brahim Díaz', pos:'OM', rating:7.0, assists:1 },
+        { name:'Soufiane Rahimi', pos:'LA', rating:6.0 },
+        { name:'Ismael Saibari', pos:'ST', rating:7.6, goals:1 },
+      ],
+      bench: [
+        { name:'Neil El Aynaoui', pos:'ZM' },
+      ],
+      cards: [],
+    },
+  },
+  6: { // Haiti 0:1 Schottland - Quelle: Sofascore, 101greatgoals (Stand 13.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-4-2',
+    home: {
+      startXI: [
+        { name:'Johny Placide', pos:'TW', rating:6.5 },
+        { name:'Carlens Arcus', pos:'RV', rating:6.0 },
+        { name:'Hannes Delcroix', pos:'IV', rating:6.0 },
+        { name:'Ricardo Adé', pos:'IV', rating:6.0 },
+        { name:'Keeto Thermoncy', pos:'LV', rating:6.0 },
+        { name:'Jean-Ricner Bellegarde', pos:'ZM', rating:6.0 },
+        { name:'Steeven Saint-Duc', pos:'ZM', rating:6.0 },
+        { name:'Frantzdy Pierrot', pos:'RA', rating:5.8 },
+        { name:'Duckens Nazon', pos:'OM', rating:6.0 },
+        { name:'Wilson Isidor', pos:'LA', rating:5.8 },
+        { name:'Carl Sainté', pos:'ST', rating:6.0 },
+      ],
+      bench: [],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Angus Gunn', pos:'TW', rating:7.4 },
+        { name:'Aaron Hickey', pos:'RV', rating:6.5 },
+        { name:'Grant Hanley', pos:'IV', rating:7.6 },
+        { name:'Jack Hendry', pos:'IV', rating:6.5 },
+        { name:'Andrew Robertson', pos:'LV', rating:6.5 },
+        { name:'Ben Gannon-Doak', pos:'RM', rating:6.8 },
+        { name:'Scott McTominay', pos:'ZM', rating:7.0 },
+        { name:'Lewis Ferguson', pos:'ZM', rating:7.6 },
+        { name:'John McGinn', pos:'LM', rating:7.4, goals:1 },
+        { name:'Che Adams', pos:'ST', rating:6.3, sub:{out:75} },
+        { name:'Lawrence Shankland', pos:'ST', rating:6.0, sub:{out:60} },
+      ],
+      bench: [
+        { name:'Ryan Christie', pos:'OM', sub:{in:60} },
+        { name:'Kenny McLean', pos:'ZM', sub:{in:75} },
+      ],
+      cards: [],
+    },
+  },
+  7: { // USA 4:1 Paraguay - Quelle: Squawka, ESPN, Goal.com (Stand 12.06.2026)
+    homeFormation: '3-4-2-1',
+    awayFormation: '4-4-2',
+    home: {
+      startXI: [
+        { name:'Matthew Freese', pos:'TW', rating:6.5 },
+        { name:'Alex Freeman', pos:'IV', rating:6.8 },
+        { name:'Tim Ream', pos:'IV', rating:6.7 },
+        { name:'Chris Richards', pos:'IV', rating:6.5 },
+        { name:'Sergiño Dest', pos:'RM', rating:7.0 },
+        { name:'Tyler Adams', pos:'ZM', rating:7.5 },
+        { name:'Weston McKennie', pos:'ZM', rating:6.8 },
+        { name:'Antonee Robinson', pos:'LM', rating:6.8 },
+        { name:'Malik Tillman', pos:'OM', rating:7.4, assists:1, sub:{out:75} },
+        { name:'Christian Pulisic', pos:'OM', rating:7.6, assists:1 },
+        { name:'Folarin Balogun', pos:'ST', rating:8.6, goals:2, sub:{out:80} },
+      ],
+      bench: [
+        { name:'Giovanni Reyna', pos:'OM', goals:1, sub:{in:75} },
+        { name:'Ricardo Pepi', pos:'ST', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Roberto Fernández', pos:'TW', rating:5.8 },
+        { name:'Juan Cáceres', pos:'RV', rating:5.5 },
+        { name:'Gustavo Gómez', pos:'IV', rating:5.7 },
+        { name:'Omar Alderete', pos:'IV', rating:5.6 },
+        { name:'Junior Alonso', pos:'LV', rating:5.5 },
+        { name:'Miguel Almirón', pos:'RM', rating:5.8 },
+        { name:'Damián Bobadilla', pos:'ZM', rating:4.5 },
+        { name:'Andrés Cubas', pos:'ZM', rating:5.6 },
+        { name:'Diego Gómez', pos:'LM', rating:5.7, sub:{out:65} },
+        { name:'Antonio Sanabria', pos:'ST', rating:5.6, sub:{out:70} },
+        { name:'Alex Arce', pos:'ST', rating:5.8 },
+      ],
+      bench: [
+        { name:'Mauricio', pos:'ST', goals:1, sub:{in:65} },
+        { name:'Ramón Sosa', pos:'OM', sub:{in:70} },
+      ],
+      cards: [],
+    },
+  },
+  8: { // Australien 2:0 Türkei - Quelle: Sofascore Team of the Day, FotMob (Stand 14.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Patrick Beach', pos:'TW', rating:9.4 },
+        { name:'Jacob Italiano', pos:'RV', rating:6.3, sub:{out:80} },
+        { name:'Harry Souttar', pos:'IV', rating:7.5 },
+        { name:'Alessandro Circati', pos:'IV', rating:7.6 },
+        { name:'Aziz Behich', pos:'LV', rating:6.4 },
+        { name:'Connor Metcalfe', pos:'ZM', rating:6.5 },
+        { name:'Jackson Irvine', pos:'ZM', rating:6.6 },
+        { name:'Riley McGree', pos:'LM', rating:6.4, sub:{out:75} },
+        { name:'Nestory Irankunda', pos:'RA', rating:7.4 },
+        { name:'Mitchell Duke', pos:'ST', rating:6.5, sub:{out:70} },
+        { name:'Martin Boyle', pos:'LA', rating:6.3 },
+      ],
+      bench: [
+        { name:'Patrick Okon-Engstler', pos:'ST', sub:{in:70} },
+        { name:'Nicholas Velupillay', pos:'RA', sub:{in:75} },
+        { name:'Jordan Bos', pos:'LV', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Ugurcan Çakir', pos:'TW', rating:6.0 },
+        { name:'Mert Müldür', pos:'RV', rating:6.0, sub:{out:46} },
+        { name:'Zeki Çelik', pos:'IV', rating:5.8 },
+        { name:'Abdülkerim Bardakcı', pos:'IV', rating:5.9 },
+        { name:'Ferdi Kadıoğlu', pos:'LV', rating:6.0 },
+        { name:'İsmail Yüksek', pos:'ZM', rating:5.8, sub:{out:65} },
+        { name:'Orkun Kökçü', pos:'ZM', rating:6.1 },
+        { name:'Salih Özcan', pos:'ZM', rating:5.9 },
+        { name:'Kerem Aktürkoğlu', pos:'RA', rating:5.6 },
+        { name:'Kenan Yıldız', pos:'LA', rating:6.2, sub:{out:75} },
+        { name:'Baris Alper Yılmaz', pos:'ST', rating:5.9 },
+      ],
+      bench: [
+        { name:'Yunus Akgün', pos:'OM', sub:{in:65} },
+        { name:'Devrim Gül', pos:'RA', sub:{in:75} },
+        { name:'Doğukan Sinik', pos:'RV', sub:{in:46} },
+      ],
+      cards: [],
+    },
+  },
+  10: { // Elfenbeinküste 1:0 Ecuador - Quelle: Sofascore, Sky Sports, FOX Sports (Stand 14.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Yahia Fofana', pos:'TW', rating:6.5 },
+        { name:'Ghislain Konan', pos:'RV', rating:6.4 },
+        { name:'Odilon Kossounou', pos:'IV', rating:6.3 },
+        { name:'Evan Ndicka', pos:'IV', rating:6.5 },
+        { name:'Guéla Doué', pos:'LV', rating:6.0, card:'yellow' },
+        { name:'Seko Fofana', pos:'ZM', rating:6.2, card:'yellow' },
+        { name:'Franck Kessié', pos:'ZM', rating:6.1, card:'yellow' },
+        { name:'Bazoumana Touré', pos:'RA', rating:5.8, sub:{out:56} },
+        { name:'Elye Wahi', pos:'ST', rating:6.0, sub:{out:77} },
+        { name:'Nicolas Pépé', pos:'LA', rating:6.4 },
+        { name:'Yan Diomande', pos:'OM', rating:8.6 },
+      ],
+      bench: [
+        { name:'Amad Diallo', pos:'RA', rating:8.1, goals:1, sub:{in:56} },
+        { name:'Ange-Yoan Bonny', pos:'ST', sub:{in:77} },
+        { name:'Ibrahim Sangaré', pos:'ZM', sub:{in:77} },
+        { name:'Christ Inao Oulaï', pos:'ZM', sub:{in:77} },
+      ],
+      cards: ['Seko Fofana (Gelb, 28\')', 'Franck Kessié (Gelb, 39\')', 'Guéla Doué (Gelb, 40\')'],
+    },
+    away: {
+      startXI: [
+        { name:'Hernán Galíndez', pos:'TW', rating:6.2 },
+        { name:'Angelo Preciado', pos:'RV', rating:5.8, sub:{out:62} },
+        { name:'Piero Hincapié', pos:'IV', rating:6.0 },
+        { name:'Willian Pacho', pos:'IV', rating:6.3 },
+        { name:'Pedro Vite', pos:'LV', rating:6.1 },
+        { name:'Moisés Caicedo', pos:'ZM', rating:6.2 },
+        { name:'Alan Franco', pos:'ZM', rating:5.9, sub:{out:62} },
+        { name:'Gonzalo Plata', pos:'RA', rating:6.3 },
+        { name:'Alan Minda', pos:'OM', rating:6.0, sub:{out:56} },
+        { name:'John Yeboah', pos:'LA', rating:5.9 },
+        { name:'Enner Valencia', pos:'ST', rating:5.8, sub:{out:77} },
+      ],
+      bench: [
+        { name:'Nilson Angulo', pos:'OM', sub:{in:56} },
+        { name:'Jackson Porozo', pos:'IV', card:'yellow', sub:{in:62} },
+        { name:'Kevin Rodríguez', pos:'ST', sub:{in:77} },
+      ],
+      cards: ['Jackson Porozo (Gelb, 73\')'],
+    },
+  },
+  11: { // Niederlande 2:2 Japan - Quelle: Sofascore, ESPN, Goal.com (Stand 14.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Bart Verbruggen', pos:'TW', rating:6.0 },
+        { name:'Denzel Dumfries', pos:'RV', rating:6.2 },
+        { name:'Virgil van Dijk', pos:'IV', rating:7.2, goals:1 },
+        { name:'Nathan Aké', pos:'IV', rating:6.0 },
+        { name:'Micky van de Ven', pos:'LV', rating:6.0, card:'yellow' },
+        { name:'Tijjani Reijnders', pos:'ZM', rating:6.3 },
+        { name:'Ryan Gravenberch', pos:'ZM', rating:7.6, assists:2 },
+        { name:'Jerdy Schouten', pos:'ZM', rating:6.1 },
+        { name:'Donyell Malen', pos:'RA', rating:6.4, sub:{out:70} },
+        { name:'Cody Gakpo', pos:'LA', rating:6.5, sub:{out:85} },
+        { name:'Memphis Depay', pos:'ST', rating:6.0, sub:{out:77} },
+      ],
+      bench: [
+        { name:'Crysencio Summerville', pos:'RA', rating:8.2, goals:1, sub:{in:70} },
+        { name:'Brian Brobbey', pos:'ST', sub:{in:77} },
+        { name:'Calvin Stengs', pos:'LA', sub:{in:85} },
+      ],
+      cards: ['Micky van de Ven (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Zion Suzuki', pos:'TW', rating:6.8 },
+        { name:'Yukinari Sugawara', pos:'RV', rating:6.0, sub:{out:75} },
+        { name:'Takehiro Tomiyasu', pos:'IV', rating:6.2 },
+        { name:'Ko Itakura', pos:'IV', rating:6.1 },
+        { name:'Yuto Nagatomo', pos:'LV', rating:6.0 },
+        { name:'Wataru Endo', pos:'ZM', rating:6.2 },
+        { name:'Hidemasa Morita', pos:'ZM', rating:6.0 },
+        { name:'Ritsu Doan', pos:'RA', rating:6.3, sub:{out:75} },
+        { name:'Takefusa Kubo', pos:'OM', rating:6.5, assists:1, sub:{out:80} },
+        { name:'Keito Nakamura', pos:'LA', rating:7.0, goals:1 },
+        { name:'Ayase Ueda', pos:'ST', rating:6.0, sub:{out:60} },
+      ],
+      bench: [
+        { name:'Koki Ogawa', pos:'ST', sub:{in:60} },
+        { name:'Daichi Kamada', pos:'OM', rating:7.5, goals:1, sub:{in:80} },
+        { name:'Takuma Asano', pos:'RA', sub:{in:75} },
+        { name:'Riki Shiogai', pos:'RV', sub:{in:75} },
+      ],
+      cards: [],
+    },
+  },
+  12: { // Schweden 5:1 Tunesien - Quelle: Sofascore, ESPN (Stand 15.06.2026)
+    homeFormation: '3-4-1-2',
+    awayFormation: '5-3-2',
+    home: {
+      startXI: [
+        { name:'Kristoffer Nordfeldt', pos:'TW', rating:6.5 },
+        { name:'Gustaf Lagerbielke', pos:'IV', rating:6.6 },
+        { name:'Isak Hien', pos:'IV', rating:6.7 },
+        { name:'Victor Lindelöf', pos:'IV', rating:6.8 },
+        { name:'Alexander Bernhardsson', pos:'RM', rating:6.5, sub:{out:75} },
+        { name:'Jesper Karlström', pos:'ZM', rating:6.6 },
+        { name:'Yasin Ayari', pos:'ZM', rating:8.7, goals:2 },
+        { name:'Gabriel Gudmundsson', pos:'LM', rating:6.7 },
+        { name:'Benjamin Nygren', pos:'OM', rating:6.5, sub:{out:70} },
+        { name:'Viktor Gyökeres', pos:'ST', rating:7.5, goals:1 },
+        { name:'Alexander Isak', pos:'ST', rating:8.8, goals:1, assists:2, sub:{out:89} },
+      ],
+      bench: [
+        { name:'Mattias Svanberg', pos:'ZM', goals:1, sub:{in:70} },
+        { name:'Lucas Bergvall', pos:'OM', assists:1, sub:{in:75} },
+        { name:'Anton Nygren', pos:'ST', sub:{in:89} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Abdelmouhib Chamakh', pos:'TW', rating:6.0 },
+        { name:'Omar Rekik', pos:'IV', rating:6.2, goals:1 },
+        { name:'Montassar Talbi', pos:'IV', rating:5.7 },
+        { name:'Amine Ben Hamida', pos:'IV', rating:5.6 },
+        { name:'Yan Valery', pos:'RM', rating:5.5 },
+        { name:'Rani Khedira', pos:'ZM', rating:5.6 },
+        { name:'Ellyes Skhiri', pos:'ZM', rating:5.7 },
+        { name:'Hannibal Mejbri', pos:'OM', rating:5.5, sub:{out:65} },
+        { name:'Ali Abdi', pos:'LM', rating:5.6 },
+        { name:'Elghali Mahmoud', pos:'ST', rating:5.3, sub:{out:75} },
+        { name:'Seifeddine Jaziri', pos:'ST', rating:5.4 },
+      ],
+      bench: [
+        { name:'Naim Sliti', pos:'OM', sub:{in:65} },
+        { name:'Issam Jebali', pos:'ST', sub:{in:75} },
+      ],
+      cards: [],
+    },
+  },
+  13: { // Belgien 1:1 Ägypten - Quelle: Sofascore, OnManorama (Stand 15.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Thibaut Courtois', pos:'TW', rating:6.5 },
+        { name:'Thomas Meunier', pos:'RV', rating:6.0 },
+        { name:'Nathan Ngoy', pos:'IV', rating:5.8 },
+        { name:'Brandon Mechele', pos:'IV', rating:5.8 },
+        { name:'Timothy Castagne', pos:'LV', rating:5.7, card:'yellow' },
+        { name:'Amadou Onana', pos:'ZM', rating:6.0, sub:{out:56} },
+        { name:'Youri Tielemans', pos:'ZM', rating:6.1 },
+        { name:'Leandro Trossard', pos:'RA', rating:6.0 },
+        { name:'Kevin De Bruyne', pos:'OM', rating:6.4, sub:{out:86} },
+        { name:'Jérémy Doku', pos:'LA', rating:6.2, sub:{out:86} },
+        { name:'Charles De Ketelaere', pos:'ST', rating:5.9, sub:{out:66} },
+      ],
+      bench: [
+        { name:'Maxim De Cuyper', pos:'LV', card:'yellow', sub:{in:56} },
+        { name:'Nicolas Raskin', pos:'ZM', sub:{in:56} },
+        { name:'Romelu Lukaku', pos:'ST', sub:{in:66} },
+        { name:'Hans Vanaken', pos:'OM', sub:{in:86} },
+        { name:'Matías Fernández-Pardo', pos:'RA', sub:{in:86} },
+      ],
+      cards: ['Timothy Castagne (Gelb, 14\')', 'Maxim De Cuyper (Gelb, 75\')'],
+    },
+    away: {
+      startXI: [
+        { name:'Mohamed El Shenawy', pos:'TW', rating:6.5 },
+        { name:'Ahmed Fatouh', pos:'RV', rating:6.0, card:'yellow' },
+        { name:'Mohamed Hany', pos:'IV', rating:5.0 },
+        { name:'Marwan Attia', pos:'IV', rating:5.8, card:'yellow' },
+        { name:'Karim Hafez', pos:'LV', rating:5.8 },
+        { name:'Emam Ashour', pos:'ZM', rating:7.8, goals:1, sub:{out:71} },
+        { name:'Mahmoud Hamdy', pos:'ZM', rating:5.8 },
+        { name:'Mostafa Ziko', pos:'RA', rating:5.7, sub:{out:76} },
+        { name:'Mohamed Salah', pos:'OM', rating:6.3, assists:1, sub:{out:76} },
+        { name:'Omar Marmoush', pos:'LA', rating:5.8 },
+        { name:'Mostafa Mohamed', pos:'ST', rating:5.6 },
+      ],
+      bench: [
+        { name:'Hamza Abdelkarim', pos:'OM', sub:{in:71} },
+        { name:'Zizo', pos:'RA', sub:{in:76} },
+        { name:'Ibrahim Adel', pos:'ST' },
+      ],
+      cards: ['Marwan Attia (Gelb, 13\')', 'Ahmed Fatouh (Gelb, 34\')'],
+    },
+  },
+  14: { // Iran 2:2 Neuseeland - Quelle: Opta/theanalyst, ESPN (Stand 15./16.06.2026)
+    homeFormation: '5-3-2',
+    awayFormation: '4-2-3-1',
+    home: {
+      startXI: [
+        { name:'Alireza Beiranvand', pos:'TW', rating:6.0 },
+        { name:'Ramin Rezaeian', pos:'RV', rating:8.4, goals:1, assists:1 },
+        { name:'Saleh Hardani', pos:'IV', rating:6.0 },
+        { name:'Hossein Kanaani', pos:'IV', rating:5.9 },
+        { name:'Shoja Khalilzadeh', pos:'IV', rating:5.8 },
+        { name:'Milad Mohammadi', pos:'LV', rating:6.0 },
+        { name:'Saeid Ezatolahi', pos:'ZM', rating:6.1 },
+        { name:'Arya Yousefi', pos:'ZM', rating:6.0 },
+        { name:'Saman Ghoddos', pos:'OM', rating:6.2 },
+        { name:'Mohammad Mohebbi', pos:'ST', rating:6.8, goals:1 },
+        { name:'Shahriar Moghanlou', pos:'ST', rating:6.0, sub:{out:70} },
+      ],
+      bench: [
+        { name:'Mehdi Ghayedi', pos:'OM', sub:{in:70} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Max Crocombe', pos:'TW', rating:6.0 },
+        { name:'Tim Payne', pos:'RV', rating:6.0 },
+        { name:'Finn Surman', pos:'IV', rating:6.0 },
+        { name:'Michael Boxall', pos:'IV', rating:5.9 },
+        { name:'Liberato Cacace', pos:'LV', rating:6.1 },
+        { name:'Joe Bell', pos:'ZM', rating:6.2 },
+        { name:'Marko Stamenic', pos:'ZM', rating:6.1 },
+        { name:'Elijah Just', pos:'RA', rating:8.3, goals:2 },
+        { name:'Alex Greive', pos:'OM', rating:6.0, sub:{out:75} },
+        { name:'Chris Wood', pos:'ST', rating:7.8, assists:2 },
+        { name:'Ben Old', pos:'LA', rating:6.0, sub:{out:80} },
+      ],
+      bench: [
+        { name:'Logan Rogerson', pos:'OM', sub:{in:75} },
+        { name:'Callum McCowatt', pos:'LA', sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  15: { // Spanien 0:0 Kap Verde - Quelle: ESPN, SI, Sofascore (Stand 15.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-1-4-1',
+    home: {
+      startXI: [
+        { name:'Unai Simón', pos:'TW', rating:7.3 },
+        { name:'Marcos Llorente', pos:'RV', rating:7.9 },
+        { name:'Pau Cubarsí', pos:'IV', rating:7.9 },
+        { name:'Aymeric Laporte', pos:'IV', rating:7.5 },
+        { name:'Marc Cucurella', pos:'LV', rating:7.4 },
+        { name:'Fabián Ruiz', pos:'ZM', rating:6.5 },
+        { name:'Rodri', pos:'ZM', rating:6.6 },
+        { name:'Pedri', pos:'ZM', rating:6.4, sub:{out:70} },
+        { name:'Ferran Torres', pos:'RA', rating:5.8, sub:{out:80} },
+        { name:'Mikel Oyarzabal', pos:'ST', rating:5.9, sub:{out:70} },
+        { name:'Gavi', pos:'LA', rating:6.0 },
+      ],
+      bench: [
+        { name:'Lamine Yamal', pos:'RA', sub:{in:70} },
+        { name:'Mikel Merino', pos:'ST', sub:{in:70} },
+        { name:'Nico Williams', pos:'LA', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Vozinha', pos:'TW', rating:8.8 },
+        { name:'Steven Moreira', pos:'RV', rating:6.5 },
+        { name:'Roberto Lopes', pos:'IV', rating:6.6 },
+        { name:'Diego Duarte', pos:'IV', rating:6.4 },
+        { name:'Stopira', pos:'LV', rating:6.3 },
+        { name:'Jamiro Monteiro', pos:'ZM', rating:6.2 },
+        { name:'Patrick Andrade', pos:'RM', rating:6.0 },
+        { name:'Dylan Tavares', pos:'OM', rating:6.0 },
+        { name:'Willy Semedo', pos:'LM', rating:6.0, sub:{out:75} },
+        { name:'Júlio Tavares', pos:'ST', rating:5.8, sub:{out:80} },
+        { name:'Garry Rodrigues', pos:'OM', rating:6.0 },
+      ],
+      bench: [
+        { name:'Kenny Rocha Santos', pos:'LM', sub:{in:75} },
+        { name:'Bryan Teixeira', pos:'ST', sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  16: { // Saudi-Arabien 1:1 Uruguay - Quelle: Sofascore, Opta/theanalyst, Heavy (Stand 15.06.2026)
+    homeFormation: '4-1-4-1',
+    awayFormation: '4-4-2',
+    home: {
+      startXI: [
+        { name:'Mohammed Al-Owais', pos:'TW', rating:7.8 },
+        { name:'Saud Abdulhamid', pos:'RV', rating:6.0 },
+        { name:'Hassan Al-Tambakti', pos:'IV', rating:6.0 },
+        { name:'Abdulelah Al-Amri', pos:'IV', rating:7.6, goals:1 },
+        { name:'Sultan Al-Ghannam', pos:'LV', rating:6.0 },
+        { name:'Mohamed Kanno', pos:'ZM', rating:6.2, assists:1 },
+        { name:'Nawaf Al-Abid', pos:'RM', rating:5.8 },
+        { name:'Mohammed Al-Burayk', pos:'OM', rating:5.7, sub:{out:80} },
+        { name:'Salem Al-Dawsari', pos:'LM', rating:6.0, sub:{out:85} },
+        { name:'Mohammed Al-Harbi', pos:'OM', rating:5.6, sub:{out:75} },
+        { name:'Firas Al-Buraikan', pos:'ST', rating:5.7 },
+      ],
+      bench: [
+        { name:'Marwan Al-Hamdan', pos:'OM', sub:{in:75} },
+        { name:'Abdullah Al-Hejji', pos:'LM', sub:{in:85} },
+        { name:'Nasser Al-Lajami', pos:'OM', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Fernando Muslera', pos:'TW', rating:6.5 },
+        { name:'Mathías Olivera', pos:'LV', rating:7.5 },
+        { name:'José María Giménez', pos:'IV', rating:6.5 },
+        { name:'Ronald Araújo', pos:'IV', rating:6.4 },
+        { name:'Nahitan Nández', pos:'RV', rating:6.3 },
+        { name:'Manuel Ugarte', pos:'ZM', rating:6.5 },
+        { name:'Federico Valverde', pos:'ZM', rating:6.6 },
+        { name:'Nicolás de la Cruz', pos:'OM', rating:6.4, sub:{out:90} },
+        { name:'Maximiliano Araújo', pos:'RM', rating:7.2, goals:1 },
+        { name:'Federico Viñas', pos:'ST', rating:6.0, sub:{out:90} },
+        { name:'Darwin Núñez', pos:'ST', rating:5.8 },
+      ],
+      bench: [
+        { name:'Rodrigo Aguirre', pos:'ST', sub:{in:90} },
+        { name:'Brian Rodríguez', pos:'RA', sub:{in:90} },
+      ],
+      cards: [],
+    },
+  },
+  17: { // Frankreich 3:1 Senegal - Quelle: Sofascore, ESPN, CBS Sports (Stand 16.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Mike Maignan', pos:'TW', rating:6.5 },
+        { name:'Jules Koundé', pos:'RV', rating:6.4 },
+        { name:'Dayot Upamecano', pos:'IV', rating:7.9 },
+        { name:'William Saliba', pos:'IV', rating:6.5 },
+        { name:'Theo Hernández', pos:'LV', rating:6.0 },
+        { name:'Aurélien Tchouaméni', pos:'ZM', rating:6.6 },
+        { name:'Adrien Rabiot', pos:'ZM', rating:7.4 },
+        { name:'Michael Olise', pos:'RA', rating:7.7, sub:{out:75} },
+        { name:'Ousmane Dembélé', pos:'OM', rating:6.0, sub:{out:60} },
+        { name:'Désiré Doué', pos:'LA', rating:6.5, sub:{out:80} },
+        { name:'Kylian Mbappé', pos:'ST', rating:8.1, goals:2 },
+      ],
+      bench: [
+        { name:'Bradley Barcola', pos:'LA', goals:1, sub:{in:60} },
+        { name:'Rayan Cherki', pos:'OM', sub:{in:75} },
+        { name:'Nicolas Jackson', pos:'ST', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Édouard Mendy', pos:'TW', rating:6.0 },
+        { name:'Formose Mendy', pos:'RV', rating:5.8 },
+        { name:'Kalidou Koulibaly', pos:'IV', rating:6.0 },
+        { name:'Abdou Diallo', pos:'IV', rating:5.7 },
+        { name:'Ismail Jakobs', pos:'LV', rating:5.8 },
+        { name:'Pape Matar Sarr', pos:'ZM', rating:6.0, sub:{out:70} },
+        { name:'Idrissa Gueye', pos:'ZM', rating:5.9, sub:{out:80} },
+        { name:'Pape Gueye', pos:'ZM', rating:5.8 },
+        { name:'Sadio Mané', pos:'RA', rating:6.2 },
+        { name:'Ismaila Sarr', pos:'LA', rating:6.0, sub:{out:65} },
+        { name:'Nicolas Jackson', pos:'ST', rating:5.9 },
+      ],
+      bench: [
+        { name:'Iliman Ndiaye', pos:'LA', goals:1, sub:{in:65} },
+        { name:'Habib Diarra', pos:'ZM', sub:{in:70} },
+        { name:'Ibrahima Mbaye', pos:'RV', sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  18: { // Irak 1:4 Norwegen - Quelle: Sports Mole, Opta/theanalyst, Sofascore (Stand 16.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Jalal Hassan', pos:'TW', rating:5.5 },
+        { name:'Zaid Tahseen', pos:'RV', rating:3.0 },
+        { name:'Rebin Sulaka', pos:'IV', rating:5.5 },
+        { name:'Ahmed Yasin', pos:'IV', rating:5.6 },
+        { name:'Amir Al-Ammari', pos:'LV', rating:5.8, assists:1 },
+        { name:'Zidane Iqbal', pos:'ZM', rating:5.6 },
+        { name:'Ali Jasim', pos:'ZM', rating:5.5 },
+        { name:'Mohanad Ali', pos:'RA', rating:5.6, sub:{out:70} },
+        { name:'Ali Al-Hamadi', pos:'OM', rating:5.5 },
+        { name:'Aymen Hussein', pos:'ST', rating:6.5, goals:1 },
+        { name:'Mojtaba Jabbari', pos:'LA', rating:5.4, sub:{out:80} },
+      ],
+      bench: [
+        { name:'Hussein Ali', pos:'RA', sub:{in:70} },
+        { name:'Frans Putros', pos:'LA', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Ørjan Nyland', pos:'TW', rating:6.5 },
+        { name:'Julian Ryerson', pos:'RV', rating:5.0 },
+        { name:'Kristoffer Ajer', pos:'IV', rating:4.0 },
+        { name:'Leo Skiri Østigård', pos:'IV', rating:7.5, goals:1, sub:{in:60} },
+        { name:'David Møller Wolfe', pos:'LV', rating:7.0, assists:1 },
+        { name:'Patrick Berg', pos:'ZM', rating:6.0 },
+        { name:'Kristian Thorstvedt', pos:'ZM', rating:7.0 },
+        { name:'Antonio Nusa', pos:'RA', rating:7.0 },
+        { name:'Martin Ødegaard', pos:'OM', rating:7.0 },
+        { name:'Oscar Bobb', pos:'LA', rating:6.0, sub:{out:60} },
+        { name:'Erling Haaland', pos:'ST', rating:8.1, goals:2 },
+      ],
+      bench: [
+        { name:'Andreas Schjelderup', pos:'OM', rating:6.0, sub:{in:60} },
+      ],
+      cards: [],
+    },
+  },
+  19: { // Argentinien 3:0 Algerien - Quelle: Sofascore, Sky Sports, Goal.com (Stand 17.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Emiliano Martínez', pos:'TW', rating:6.5 },
+        { name:'Nahuel Molina', pos:'RV', rating:6.4 },
+        { name:'Cristian Romero', pos:'IV', rating:6.5 },
+        { name:'Lisandro Martínez', pos:'IV', rating:6.4 },
+        { name:'Nicolás Tagliafico', pos:'LV', rating:6.3 },
+        { name:'Rodrigo De Paul', pos:'ZM', rating:7.0, assists:1 },
+        { name:'Enzo Fernández', pos:'ZM', rating:6.6 },
+        { name:'Alexis Mac Allister', pos:'ZM', rating:6.8, sub:{out:80} },
+        { name:'Lionel Messi', pos:'RA', rating:10.0, goals:3, sub:{out:80} },
+        { name:'Julián Álvarez', pos:'ST', rating:6.5, sub:{out:70} },
+        { name:'Lautaro Martínez', pos:'LA', rating:6.2 },
+      ],
+      bench: [
+        { name:'Giovani Lo Celso', pos:'ZM', sub:{in:70} },
+        { name:'Ángel Di María', pos:'RA', sub:{in:80} },
+        { name:'Paulo Dybala', pos:'OM', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Luca Zidane', pos:'TW', rating:5.6 },
+        { name:'Ahmed Touba', pos:'RV', rating:5.7 },
+        { name:'Aissa Mandi', pos:'IV', rating:5.6 },
+        { name:'Jaouen Hadjam', pos:'IV', rating:5.6 },
+        { name:'Mohamed Amine Tougai', pos:'LV', rating:5.5 },
+        { name:'Ramiz Zerrouki', pos:'ZM', rating:5.7 },
+        { name:'Ibrahim Maza', pos:'ZM', rating:6.0, sub:{out:75} },
+        { name:'Farès Chaïbi', pos:'RA', rating:6.2, goals:1 },
+        { name:'Houssem Aouar', pos:'OM', rating:5.6, sub:{out:65} },
+        { name:'Said Benrahma', pos:'LA', rating:5.7 },
+        { name:'Amir Sayoud', pos:'ST', rating:5.5, sub:{out:80} },
+      ],
+      bench: [
+        { name:'Rachid Ghezzal', pos:'OM', sub:{in:65} },
+        { name:'Mohamed Amoura', pos:'ST', sub:{in:75} },
+        { name:'Yousri Bouzok', pos:'ST', sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  20: { // Österreich 3:1 Jordanien - Quelle: Sofascore, Heavy (Stand 17.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '5-4-1',
+    home: {
+      startXI: [
+        { name:'Alexander Schlager', pos:'TW', rating:6.8 },
+        { name:'Stefan Posch', pos:'RV', rating:6.5 },
+        { name:'Philipp Lienhart', pos:'IV', rating:6.4 },
+        { name:'David Alaba', pos:'IV', rating:6.6 },
+        { name:'Phillipp Mwene', pos:'LV', rating:6.3, sub:{out:59} },
+        { name:'Nicolas Seiwald', pos:'ZM', rating:6.5 },
+        { name:'Xaver Schlager', pos:'ZM', rating:6.7, assists:1 },
+        { name:'Romano Schmid', pos:'RA', rating:7.6, goals:1, sub:{out:59} },
+        { name:'Konrad Laimer', pos:'OM', rating:6.6, sub:{out:59} },
+        { name:'Marcel Sabitzer', pos:'LA', rating:6.7, card:'yellow' },
+        { name:'Sasa Kalajdzic', pos:'ST', rating:6.4 },
+      ],
+      bench: [
+        { name:'Marko Arnautović', pos:'ST', goals:1, sub:{in:59} },
+        { name:'Michael Gregoritsch', pos:'ST', sub:{in:59} },
+        { name:'Patrick Wimmer', pos:'LA', sub:{in:59} },
+      ],
+      cards: ['Marcel Sabitzer (Gelb, 77\')'],
+    },
+    away: {
+      startXI: [
+        { name:'Yazeed Abulaila', pos:'TW', rating:5.0 },
+        { name:'Abdallah Nasib', pos:'IV', rating:5.4 },
+        { name:'Yazan Al-Arab', pos:'IV', rating:4.5 },
+        { name:'Mo Abualnadi', pos:'IV', rating:5.3 },
+        { name:'Saleem Obaid', pos:'RV', rating:5.0 },
+        { name:'Ehsan Haddad', pos:'ZM', rating:5.4 },
+        { name:'Nizar Al-Rashdan', pos:'ZM', rating:5.3, sub:{out:70} },
+        { name:'Noor Al-Rawabdeh', pos:'LV', rating:5.6, assists:1 },
+        { name:'Mohannad Abu Taha', pos:'OM', rating:5.4, sub:{out:80} },
+        { name:'Mousa Al-Tamari', pos:'RA', rating:5.7, sub:{out:75} },
+        { name:'Ali Olwan', pos:'ST', rating:6.0, goals:1 },
+      ],
+      bench: [
+        { name:'Odeh Fakhouri', pos:'OM', sub:{in:75} },
+        { name:'Yazan Al-Naimat', pos:'ST', sub:{in:80} },
+        { name:'Mahmoud Al-Mardi', pos:'ZM', sub:{in:70} },
+      ],
+      cards: [],
+    },
+  },
+  21: { // Portugal 1:1 DR Kongo - Quelle: Sofascore, Heavy, FotMob (Stand 17.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '5-3-2',
+    home: {
+      startXI: [
+        { name:'Diogo Costa', pos:'TW', rating:6.5 },
+        { name:'João Cancelo', pos:'RV', rating:6.6 },
+        { name:'Tomás Araújo', pos:'IV', rating:5.8, card:'yellow' },
+        { name:'Renato Veiga', pos:'IV', rating:6.0 },
+        { name:'Nuno Mendes', pos:'LV', rating:6.4, card:'yellow' },
+        { name:'João Neves', pos:'ZM', rating:7.0, goals:1 },
+        { name:'Vitinha', pos:'ZM', rating:6.5 },
+        { name:'Bernardo Silva', pos:'RA', rating:6.2, sub:{out:46} },
+        { name:'Bruno Fernandes', pos:'OM', rating:6.4 },
+        { name:'Pedro Neto', pos:'LA', rating:6.6, assists:1 },
+        { name:'Cristiano Ronaldo', pos:'ST', rating:6.1 },
+      ],
+      bench: [
+        { name:'Francisco Conceição', pos:'RA', sub:{in:46} },
+      ],
+      cards: ['Nuno Mendes (Gelb)', 'Tomás Araújo (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Lionel Mpasi-Nzau', pos:'TW', rating:6.5 },
+        { name:'Chancel Mbemba', pos:'IV', rating:6.3, card:'yellow' },
+        { name:'Axel Tuanzebe', pos:'IV', rating:6.0 },
+        { name:'Steve Kapuadi', pos:'IV', rating:5.9 },
+        { name:'Aaron Wan-Bissaka', pos:'RV', rating:5.8 },
+        { name:'Arthur Masuaku', pos:'LV', rating:6.2, assists:1 },
+        { name:'Ngal Ayel Mukau', pos:'ZM', rating:5.8, sub:{out:75} },
+        { name:'Samuel Moutoussamy', pos:'ZM', rating:5.9 },
+        { name:'Edo Kayembe', pos:'ZM', rating:6.0 },
+        { name:'Cédric Bakambu', pos:'ST', rating:5.9, sub:{out:80} },
+        { name:'Yoane Wissa', pos:'ST', rating:7.6, goals:1 },
+      ],
+      bench: [
+        { name:'Chris Pickel', pos:'ZM', sub:{in:75} },
+        { name:'Silas Katompa', pos:'RA', sub:{in:80} },
+      ],
+      cards: ['Chancel Mbemba (Gelb)'],
+    },
+  },
+  22: { // Usbekistan 1:3 Kolumbien - Quelle: Sofascore, ESPN, Football Park (Stand 18.06.2026)
+    homeFormation: '3-4-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Utkir Yusupov', pos:'TW', rating:6.0 },
+        { name:'Abdukodir Khusanov', pos:'IV', rating:6.2 },
+        { name:'Sherzod Nasrullaev', pos:'IV', rating:5.8 },
+        { name:'Abbosbek Fayzullaev', pos:'IV', rating:6.8, goals:1, sub:{out:80} },
+        { name:'Jasurbek Yakhshiboev', pos:'RM', rating:5.8 },
+        { name:'Eldor Shomurodov', pos:'ZM', rating:6.0, sub:{out:75} },
+        { name:'Azizbek Turgunboev', pos:'ZM', rating:5.7 },
+        { name:'Jaloliddin Masharipov', pos:'LM', rating:5.8 },
+        { name:'Khojiakbar Alijonov', pos:'OM', rating:5.6, sub:{out:70} },
+        { name:'Azizbek Amanov', pos:'RA', rating:5.7 },
+        { name:'Igor Sergeev', pos:'ST', rating:5.8 },
+      ],
+      bench: [
+        { name:'Jasur Yakhshiboev', pos:'OM', sub:{in:70} },
+        { name:'Sardor Mirzaev', pos:'ZM', sub:{in:75} },
+        { name:'Marufjon Shukurov', pos:'IV', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Camilo Vargas', pos:'TW', rating:6.0 },
+        { name:'Daniel Muñoz', pos:'RV', rating:7.5, goals:1 },
+        { name:'Davinson Sánchez', pos:'IV', rating:6.2 },
+        { name:'Cristian Borja', pos:'IV', rating:6.0 },
+        { name:'Johan Mojica', pos:'LV', rating:6.1 },
+        { name:'Richard Ríos', pos:'ZM', rating:6.3, sub:{out:80} },
+        { name:'Gustavo Puerta', pos:'ZM', rating:6.0 },
+        { name:'Jhon Arias', pos:'RA', rating:6.4, sub:{out:75} },
+        { name:'James Rodríguez', pos:'OM', rating:6.5 },
+        { name:'Luis Díaz', pos:'LA', rating:8.5, goals:1, assists:1, sub:{out:85} },
+        { name:'Luis Javier Suárez', pos:'ST', rating:6.0 },
+      ],
+      bench: [
+        { name:'Jaminton Campaz', pos:'RA', goals:1, sub:{in:75} },
+        { name:'Kevin Castaño', pos:'ZM', sub:{in:80} },
+        { name:'Carlos Hernández', pos:'OM', sub:{in:85} },
+      ],
+      cards: [],
+    },
+  },
+  23: { // England 4:2 Kroatien - Quelle: Sofascore, Goal.com (Stand 17.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '3-4-2-1',
+    home: {
+      startXI: [
+        { name:'Jordan Pickford', pos:'TW', rating:6.5 },
+        { name:'Reece James', pos:'RV', rating:6.4 },
+        { name:'Marc Guéhi', pos:'IV', rating:6.3, sub:{out:90} },
+        { name:'John Stones', pos:'IV', rating:6.4 },
+        { name:'Nico O\'Reilly', pos:'LV', rating:6.5 },
+        { name:'Declan Rice', pos:'ZM', rating:7.7 },
+        { name:'Elliot Anderson', pos:'ZM', rating:6.8, assists:1 },
+        { name:'Bukayo Saka', pos:'RA', rating:6.6, assists:1, sub:{out:75} },
+        { name:'Jude Bellingham', pos:'OM', rating:7.7, goals:1, sub:{out:80} },
+        { name:'Anthony Gordon', pos:'LA', rating:6.3, sub:{out:65} },
+        { name:'Harry Kane', pos:'ST', rating:8.3, goals:2 },
+      ],
+      bench: [
+        { name:'Marcus Rashford', pos:'LA', goals:1, sub:{in:65} },
+        { name:'Noni Madueke', pos:'RA', sub:{in:75} },
+        { name:'Morgan Rogers', pos:'OM', sub:{in:80} },
+        { name:'Ezri Konsa', pos:'IV', sub:{in:90} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Dominik Livaković', pos:'TW', rating:6.8 },
+        { name:'Joško Gvardiol', pos:'IV', rating:5.8 },
+        { name:'Josip Šutalo', pos:'IV', rating:5.7 },
+        { name:'Luka Vušković', pos:'IV', rating:5.6, sub:{out:60} },
+        { name:'Josip Stanišić', pos:'RM', rating:5.7 },
+        { name:'Luka Modrić', pos:'ZM', rating:6.0 },
+        { name:'Mateo Kovačić', pos:'ZM', rating:5.9 },
+        { name:'Ivan Perišić', pos:'LM', rating:6.2, sub:{out:75} },
+        { name:'Petar Sučić', pos:'OM', rating:6.4, assists:1 },
+        { name:'Martin Baturina', pos:'OM', rating:6.6, goals:1 },
+        { name:'Petar Musa', pos:'ST', rating:6.5, goals:1 },
+      ],
+      bench: [
+        { name:'Mario Pašalić', pos:'OM', sub:{in:60} },
+        { name:'Andrej Kramarić', pos:'ST', sub:{in:75} },
+        { name:'Ivan Matanović', pos:'ST', sub:{in:60} },
+      ],
+      cards: [],
+    },
+  },
+  24: { // Ghana 1:0 Panama - Quelle: Sofascore, ESPN, Heavy (Stand 17.06.2026)
+    homeFormation: '4-4-1-1',
+    awayFormation: '3-4-3',
+    home: {
+      startXI: [
+        { name:'Lawrence Ati-Zigi', pos:'TW', rating:6.0, sub:{out:46} },
+        { name:'Marvin Senaya', pos:'RV', rating:6.0 },
+        { name:'Jonas Adjetey', pos:'IV', rating:7.6 },
+        { name:'Jerome Opoku', pos:'IV', rating:7.0 },
+        { name:'Gideon Mensah', pos:'LV', rating:6.0 },
+        { name:'Ernest Nuamah', pos:'RM', rating:5.8, sub:{out:57} },
+        { name:'Caleb Yirenkyi', pos:'ZM', rating:7.5, goals:1, card:'yellow' },
+        { name:'Elisha Owusu', pos:'ZM', rating:6.0, sub:{out:78} },
+        { name:'Antoine Semenyo', pos:'LM', rating:6.5 },
+        { name:'Kamaldeen Sulemana', pos:'OM', rating:5.8, sub:{out:57} },
+        { name:'Jordan Ayew', pos:'ST', rating:6.0, sub:{out:87} },
+      ],
+      bench: [
+        { name:'Benjamin Asare', pos:'TW', rating:8.2, sub:{in:46} },
+        { name:'Abdul Fatawu', pos:'RM', sub:{in:57} },
+        { name:'Brandon Thomas-Asante', pos:'ST', assists:1, sub:{in:57} },
+        { name:'Kwasi Sibo', pos:'ZM', sub:{in:78} },
+        { name:'Prince Adu', pos:'ST', sub:{in:87} },
+      ],
+      cards: ['Caleb Yirenkyi (Gelb, 16\')'],
+    },
+    away: {
+      startXI: [
+        { name:'Orlando Mosquera', pos:'TW', rating:6.5 },
+        { name:'César Blackman', pos:'RV', rating:5.8, card:'yellow', sub:{out:63} },
+        { name:'Andrés Andrade', pos:'IV', rating:6.0 },
+        { name:'Eric Davis', pos:'IV', rating:6.0 },
+        { name:'Michael Murillo', pos:'LV', rating:6.0 },
+        { name:'Adalberto Carrasquilla', pos:'ZM', rating:6.0 },
+        { name:'Aníbal Godoy', pos:'ZM', rating:6.0 },
+        { name:'José Luis Rodríguez', pos:'RM', rating:5.9, sub:{out:74} },
+        { name:'Cecilio Waterman', pos:'ST', rating:5.8, sub:{out:63} },
+        { name:'Cristian Martínez', pos:'OM', rating:5.9, sub:{out:63} },
+        { name:'Carlos Harvey', pos:'LM', rating:5.8, card:'yellow' },
+      ],
+      bench: [
+        { name:'José Fajardo', pos:'RM', sub:{in:63} },
+        { name:'Azarías Londoño', pos:'OM', sub:{in:63} },
+        { name:'Ismael Díaz', pos:'OM', sub:{in:74} },
+      ],
+      cards: ['César Blackman (Gelb, 72\')', 'Carlos Harvey (Gelb, 90+9\')'],
+    },
+  },
+  25: { // Tschechien 1:1 Südafrika - Quelle: Sofascore, ESPN, Sky Sports (Stand 18.06.2026)
+    homeFormation: '3-4-2-1',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Matěj Kovář', pos:'TW', rating:6.0 },
+        { name:'Robin Hranáč', pos:'IV', rating:6.2 },
+        { name:'Ladislav Krejčí', pos:'IV', rating:6.0 },
+        { name:'David Zíma', pos:'IV', rating:6.0 },
+        { name:'Vladimír Coufal', pos:'RM', rating:6.0 },
+        { name:'Tomáš Souček', pos:'ZM', rating:6.0 },
+        { name:'Alexandr Sojka', pos:'ZM', rating:6.5, assists:1 },
+        { name:'Jaroslav Zelený', pos:'LM', rating:6.0 },
+        { name:'Lukáš Provod', pos:'OM', rating:6.0, sub:{out:46} },
+        { name:'Vladimír Darida', pos:'OM', rating:5.9, sub:{out:75} },
+        { name:'Patrik Schick', pos:'ST', rating:5.8 },
+      ],
+      bench: [
+        { name:'Adam Hložek', pos:'OM', sub:{in:46} },
+        { name:'Michal Sadílek', pos:'ZM', goals:1, sub:{in:0} },
+        { name:'Lukáš Červ', pos:'ZM', rating:6.0, sub:{in:75} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Ronwen Williams', pos:'TW', rating:6.5 },
+        { name:'Khuliso Mudau', pos:'RV', rating:6.0 },
+        { name:'Mbekezeli Mbokazi', pos:'IV', rating:6.0 },
+        { name:'Ime Okon', pos:'IV', rating:6.0 },
+        { name:'Aubrey Modiba', pos:'LV', rating:6.0 },
+        { name:'Teboho Mokoena', pos:'ZM', rating:8.0, goals:1 },
+        { name:'Sphephelo Sithole', pos:'ZM', rating:6.0 },
+        { name:'Thapelo Maseko', pos:'RM', rating:6.2, sub:{out:80} },
+        { name:'Oswin Appollis', pos:'OM', rating:6.0, sub:{out:75} },
+        { name:'Iqraam Rayners', pos:'LM', rating:5.8, sub:{out:60} },
+        { name:'Lyle Foster', pos:'ST', rating:5.9 },
+      ],
+      bench: [
+        { name:'Elias Makgopa', pos:'ST', sub:{in:60} },
+        { name:'Ronwen Mofokeng', pos:'RM', sub:{in:75} },
+        { name:'Kamogelo Sebelebele', pos:'OM', sub:{in:80} },
+      ],
+      cards: [],
+    },
+  },
+  26: { // Mexiko 1:0 Südkorea - Quelle: Sofascore, NBC Sports (Stand 19.06.2026)
+    homeFormation: '4-1-4-1',
+    awayFormation: '3-4-2-1',
+    home: {
+      startXI: [
+        { name:'Raúl Rangel', pos:'TW', rating:6.5 },
+        { name:'Jorge Sánchez', pos:'RV', rating:6.0 },
+        { name:'Edson Álvarez', pos:'IV', rating:6.2 },
+        { name:'Johan Vázquez', pos:'IV', rating:6.1 },
+        { name:'Jesús Gallardo', pos:'LV', rating:6.0 },
+        { name:'Érik Lira', pos:'ZM', rating:6.0, sub:{out:71} },
+        { name:'Roberto Alvarado', pos:'RM', rating:6.0, sub:{out:84} },
+        { name:'Brian Gutiérrez', pos:'ZM', rating:6.0, sub:{out:71} },
+        { name:'Luis Romo', pos:'ZM', rating:8.0, goals:1 },
+        { name:'Julián Quiñones', pos:'LM', rating:6.2, sub:{out:80} },
+        { name:'Raúl Jiménez', pos:'ST', rating:6.3 },
+      ],
+      bench: [
+        { name:'Orbelín Pineda', pos:'ZM', sub:{in:71} },
+        { name:'Obed Vargas', pos:'ZM', sub:{in:71} },
+        { name:'Santiago Giménez', pos:'ST', sub:{in:80} },
+        { name:'Israel Reyes', pos:'RV', sub:{in:80} },
+        { name:'César Huerta', pos:'LM', sub:{in:84} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Seung-gyu Kim', pos:'TW', rating:5.0 },
+        { name:'Han-beom Lee', pos:'IV', rating:5.8 },
+        { name:'Min-jae Kim', pos:'IV', rating:6.0 },
+        { name:'Gi-hyuk Lee', pos:'IV', rating:5.8 },
+        { name:'Young-woo Seol', pos:'RM', rating:5.8, sub:{out:71} },
+        { name:'Mo. Kim', pos:'ZM', rating:5.9, sub:{out:71} },
+        { name:'In-beom Hwang', pos:'ZM', rating:6.0 },
+        { name:'Seung-ho Paik', pos:'ZM', rating:5.9, card:'yellow' },
+        { name:'Kang-in Lee', pos:'OM', rating:6.0, card:'yellow' },
+        { name:'Jae-sung Lee', pos:'OM', rating:5.8, sub:{out:57} },
+        { name:'Heung-min Son', pos:'ST', rating:6.0, sub:{out:57} },
+      ],
+      bench: [
+        { name:'Hee-chan Hwang', pos:'ST', sub:{in:57} },
+        { name:'Hyun-jun Oh', pos:'ST', sub:{in:57} },
+        { name:'Ji-sung Eom', pos:'ZM', sub:{in:71} },
+        { name:'Hyun-jun Yang', pos:'OM', sub:{in:71} },
+      ],
+      cards: ['Kang-in Lee (Gelb, 4\')'],
+    },
+  },
+  27: { // Schweiz 4:1 Bosnien - Quelle: Sofascore, The Blazing Musket (Stand 18.06.2026)
+    homeFormation: '3-4-3',
+    awayFormation: '4-4-2',
+    home: {
+      startXI: [
+        { name:'Gregor Kobel', pos:'TW', rating:6.5 },
+        { name:'Denis Zakaria', pos:'IV', rating:6.4 },
+        { name:'Manuel Akanji', pos:'IV', rating:6.5 },
+        { name:'Nico Elvedi', pos:'IV', rating:6.3 },
+        { name:'Michel Aebischer', pos:'RM', rating:6.4 },
+        { name:'Becir Omeragic', pos:'ZM', rating:6.0 },
+        { name:'Granit Xhaka', pos:'ZM', rating:8.1, goals:1 },
+        { name:'Ricardo Rodríguez', pos:'LM', rating:6.2, sub:{out:65} },
+        { name:'Rubén Vargas', pos:'RA', rating:8.4, goals:1, assists:1, sub:{out:84} },
+        { name:'Breel Embolo', pos:'ST', rating:6.6 },
+        { name:'Noah Okafor', pos:'LA', rating:6.2, sub:{out:65} },
+      ],
+      bench: [
+        { name:'Johan Manzambi', pos:'OM', rating:8.4, goals:2, sub:{in:65} },
+        { name:'Dan Ndoye', pos:'LA', sub:{in:65} },
+        { name:'Miro Muheim', pos:'LV', sub:{in:84} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Nikola Vasilj', pos:'TW', rating:6.0 },
+        { name:'Riad Bajić', pos:'RV', rating:5.6 },
+        { name:'Toni Šunjić', pos:'IV', rating:5.5 },
+        { name:'Tarik Muharemović', pos:'IV', rating:5.0, card:'red' },
+        { name:'Sead Kolašinac', pos:'LV', rating:5.6 },
+        { name:'Ermin Bajraktarević', pos:'ZM', rating:5.7, sub:{out:75} },
+        { name:'Rade Krunić', pos:'ZM', rating:5.6 },
+        { name:'Amar Memić', pos:'RM', rating:5.6 },
+        { name:'Kerim Alajbegović', pos:'OM', rating:5.7 },
+        { name:'Edin Džeko', pos:'ST', rating:5.5, sub:{out:65} },
+        { name:'Amar Lukić', pos:'ST', rating:5.4, sub:{out:65} },
+      ],
+      bench: [
+        { name:'Ermin Mahmić', pos:'ST', goals:1, sub:{in:65} },
+        { name:'Smail Prevljak', pos:'ST', sub:{in:65} },
+        { name:'Ivan Šunjić', pos:'ZM', sub:{in:75} },
+      ],
+      cards: ['Tarik Muharemović (Rot, 80\')'],
+    },
+  },
+  28: { // Kanada 6:0 Katar - Quelle: Sofascore, ESPN, olympic.ca (Stand 18.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Dayne St. Clair', pos:'TW', rating:7.0 },
+        { name:'Alistair Johnston', pos:'RV', rating:7.0 },
+        { name:'Derek Cornelius', pos:'IV', rating:6.8 },
+        { name:'Moïse Bombito', pos:'IV', rating:6.8 },
+        { name:'Alphonso Davies', pos:'LV', rating:7.2 },
+        { name:'Tajon Buchanan', pos:'RM', rating:7.0 },
+        { name:'Ismaël Koné', pos:'ZM', rating:6.5, sub:{out:53} },
+        { name:'Stephen Eustaquio', pos:'ZM', rating:7.8, assists:1 },
+        { name:'Ali Ahmed', pos:'LM', rating:6.8, sub:{out:75} },
+        { name:'Cyle Larin', pos:'ST', rating:7.5, goals:1, sub:{out:75} },
+        { name:'Jonathan David', pos:'ST', rating:9.0, goals:3 },
+      ],
+      bench: [
+        { name:'Nathan Saliba', pos:'ZM', goals:1, sub:{in:53} },
+        { name:'Jacob Shaffelburg', pos:'LM', sub:{in:75} },
+        { name:'Promise David', pos:'ST', sub:{in:75} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Meshaal Barsham', pos:'TW', rating:5.0 },
+        { name:'Pedro Miguel', pos:'IV', rating:5.0 },
+        { name:'Homam Elamin', pos:'IV', rating:3.0, card:'red' },
+        { name:'Boualem Khoukhi', pos:'IV', rating:5.0 },
+        { name:'Ayoub Al Oui', pos:'RV', rating:5.0 },
+        { name:'Assim Madibo', pos:'ZM', rating:3.0, card:'red', sub:{out:62} },
+        { name:'Jassem Gaber', pos:'ZM', rating:5.0 },
+        { name:'Mohammed Al-Mannai', pos:'RM', rating:4.0 },
+        { name:'Edmílson Junior', pos:'LM', rating:5.0, sub:{out:65} },
+        { name:'Akram Afif', pos:'OM', rating:5.0, sub:{out:75} },
+        { name:'Almoez Ali', pos:'ST', rating:5.0, sub:{out:75} },
+      ],
+      bench: [
+        { name:'Yusuf Abdurisag', pos:'LM', sub:{in:65} },
+        { name:'Ahmed Al-Ganehi', pos:'OM', sub:{in:75} },
+        { name:'Mohammed Muntari', pos:'ST', sub:{in:75} },
+      ],
+      cards: ['Homam Elamin (Rot, 26\')', 'Assim Madibo (Rot, 62\')'],
+    },
+  },
+  31: { // USA 2:0 Australien - Quelle: Outlook India, ESPN, Heavy (Stand 19.06.2026)
+    homeFormation: '4-3-3',
+    awayFormation: '4-5-1',
+    home: {
+      startXI: [
+        { name:'Matt Freese', pos:'TW', rating:6.5 },
+        { name:'Alex Freeman', pos:'RV', rating:7.4, goals:1 },
+        { name:'Chris Richards', pos:'IV', rating:6.5 },
+        { name:'Tim Ream', pos:'IV', rating:6.4 },
+        { name:'Antonee Robinson', pos:'LV', rating:6.5 },
+        { name:'Malik Tillman', pos:'ZM', rating:6.6 },
+        { name:'Tyler Adams', pos:'ZM', rating:6.8 },
+        { name:'Sergiño Dest', pos:'RM', rating:6.9, assists:1 },
+        { name:'Ricardo Pepi', pos:'OM', rating:6.0, sub:{out:70} },
+        { name:'Weston McKennie', pos:'LM', rating:6.3 },
+        { name:'Folarin Balogun', pos:'ST', rating:6.8 },
+      ],
+      bench: [
+        { name:'Giovanni Reyna', pos:'OM', sub:{in:70} },
+        { name:'Tim Weah', pos:'RA', sub:{in:80} },
+        { name:'Brenden Aaronson', pos:'OM', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Patrick Beach', pos:'TW', rating:6.5 },
+        { name:'Jacob Italiano', pos:'RV', rating:5.8 },
+        { name:'Alessandro Circati', pos:'IV', rating:5.0, card:'yellow' },
+        { name:'Harry Souttar', pos:'IV', rating:5.5 },
+        { name:'Cameron Burgess', pos:'LV', rating:4.0, sub:{out:46} },
+        { name:'Jordan Bos', pos:'LM', rating:5.5, card:'yellow' },
+        { name:'Mathew Leckie', pos:'RM', rating:5.6 },
+        { name:'Aiden O\'Neill', pos:'ZM', rating:5.7 },
+        { name:'Paul Okon-Engstler', pos:'ZM', rating:5.6 },
+        { name:'Nishan Velupillay', pos:'OM', rating:5.5, sub:{out:46} },
+        { name:'Mohamed Touré', pos:'ST', rating:5.4, sub:{out:46} },
+      ],
+      bench: [
+        { name:'Jason Geria', pos:'LV', sub:{in:46} },
+        { name:'Nestory Irankunda', pos:'OM', sub:{in:46} },
+        { name:'Connor Metcalfe', pos:'ZM', sub:{in:46} },
+      ],
+      cards: ['Jordan Bos (Gelb, 16\')', 'Alessandro Circati (Gelb, 32\')'],
+    },
+  },
+  32: { // Türkei 0:1 Paraguay - Quelle: Sofascore, Heavy, FIFA (Stand 20.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '4-4-2',
+    home: {
+      startXI: [
+        { name:'Ugurcan Çakir', pos:'TW', rating:6.0 },
+        { name:'Mert Müldür', pos:'RV', rating:6.0 },
+        { name:'Abdülkerim Bardakcı', pos:'IV', rating:5.8 },
+        { name:'Merih Demiral', pos:'IV', rating:5.7 },
+        { name:'Ferdi Kadıoğlu', pos:'LV', rating:6.0, sub:{out:46} },
+        { name:'İsmail Yüksek', pos:'ZM', rating:5.8, sub:{out:80} },
+        { name:'Orkun Kökçü', pos:'ZM', rating:6.0 },
+        { name:'Kerem Aktürkoğlu', pos:'RA', rating:5.6, sub:{out:70} },
+        { name:'Arda Güler', pos:'OM', rating:6.2 },
+        { name:'Kenan Yıldız', pos:'LA', rating:5.9 },
+        { name:'Baris Alper Yılmaz', pos:'ST', rating:5.7, sub:{out:46} },
+      ],
+      bench: [
+        { name:'Can Uzun', pos:'ST', sub:{in:46} },
+        { name:'Yunus Akgün', pos:'OM', sub:{in:46} },
+        { name:'Eren Elmalı', pos:'LV', sub:{in:46} },
+        { name:'Devrim Gül', pos:'RA', sub:{in:70} },
+        { name:'Doğukan Sinik', pos:'ZM', sub:{in:80} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Orlando Gil', pos:'TW', rating:7.0 },
+        { name:'Juan Cáceres', pos:'RV', rating:6.4 },
+        { name:'Gustavo Gómez', pos:'IV', rating:6.5 },
+        { name:'Omar Alderete', pos:'IV', rating:6.6 },
+        { name:'Alan Maidana', pos:'LV', rating:6.3 },
+        { name:'Andrés Cubas', pos:'ZM', rating:6.5 },
+        { name:'Matías Galarza', pos:'ZM', rating:7.8, goals:1, card:'yellow' },
+        { name:'Diego Gómez', pos:'RM', rating:6.2, sub:{out:80} },
+        { name:'Miguel Almirón', pos:'OM', rating:4.5, card:'red' },
+        { name:'Julio Enciso', pos:'LM', rating:6.4 },
+        { name:'Ramón Sosa', pos:'ST', rating:6.0, sub:{out:75} },
+      ],
+      bench: [
+        { name:'Gustavo Velázquez', pos:'ST', sub:{in:75} },
+        { name:'Ignacio Pitta', pos:'ZM', sub:{in:80} },
+      ],
+      cards: ['Matías Galarza (Gelb, 4\')', 'Miguel Almirón (Rot, 45+3\')'],
+    },
+  },
+  29: { // Schottland 0:1 Marokko - Quelle: Sports Mole, Sofascore, ESPN (Stand 19.06.2026)
+    homeFormation: '4-4-2',
+    awayFormation: '4-3-3',
+    home: {
+      startXI: [
+        { name:'Angus Gunn', pos:'TW', rating:6.5 },
+        { name:'Aaron Hickey', pos:'RV', rating:6.5 },
+        { name:'Jack Hendry', pos:'IV', rating:7.5 },
+        { name:'Grant Hanley', pos:'IV', rating:6.5 },
+        { name:'Andrew Robertson', pos:'LV', rating:6.5, card:'yellow' },
+        { name:'Ben Doak', pos:'RM', rating:6.0, sub:{out:75} },
+        { name:'Kenny McLean', pos:'ZM', rating:6.0, sub:{out:60} },
+        { name:'Ryan Christie', pos:'ZM', rating:6.0 },
+        { name:'John McGinn', pos:'LM', rating:6.3 },
+        { name:'Che Adams', pos:'ST', rating:6.0, sub:{out:75} },
+        { name:'Lyndon Dykes', pos:'ST', rating:5.8 },
+      ],
+      bench: [
+        { name:'Ross Stewart', pos:'ST', sub:{in:75} },
+        { name:'Tony Ralston', pos:'RV', sub:{in:75} },
+        { name:'Kieran Tierney', pos:'LV', sub:{in:60} },
+      ],
+      cards: ['Andrew Robertson (Gelb)'],
+    },
+    away: {
+      startXI: [
+        { name:'Yassine Bounou', pos:'TW', rating:6.5 },
+        { name:'Noussair Mazraoui', pos:'RV', rating:7.5 },
+        { name:'Chadi Riad', pos:'IV', rating:7.3 },
+        { name:'Nayef Aguerd', pos:'IV', rating:6.5 },
+        { name:'Yahia Attiyat Allah', pos:'LV', rating:6.0, card:'yellow' },
+        { name:'Azzedine Ounahi', pos:'ZM', rating:6.5, sub:{out:80} },
+        { name:'Bilal El Khannouss', pos:'ZM', rating:6.5, sub:{out:70} },
+        { name:'Chemseddine Talbi', pos:'RA', rating:6.3 },
+        { name:'Brahim Díaz', pos:'OM', rating:8.0, assists:1 },
+        { name:'Soufiane Rahimi', pos:'LA', rating:6.2, sub:{out:85} },
+        { name:'Ismael Saibari', pos:'ST', rating:8.5, goals:1 },
+      ],
+      bench: [
+        { name:'Idriss Diop', pos:'ZM', sub:{in:70} },
+        { name:'Soufiane El Mourabet', pos:'OM', sub:{in:80} },
+        { name:'Aymen Amaimoun Echghouyab', pos:'LA', sub:{in:85} },
+      ],
+      cards: ['Yahia Attiyat Allah (Gelb)'],
+    },
+  },
+  30: { // Brasilien 3:0 Haiti - Quelle: Goal.com, Sofascore (Stand 20.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '5-4-1',
+    home: {
+      startXI: [
+        { name:'Alisson', pos:'TW', rating:7.0 },
+        { name:'Vanderson', pos:'RV', rating:6.5 },
+        { name:'Marquinhos', pos:'IV', rating:6.5 },
+        { name:'Gabriel Magalhães', pos:'IV', rating:6.5 },
+        { name:'Douglas Santos', pos:'LV', rating:6.5 },
+        { name:'Casemiro', pos:'ZM', rating:6.5 },
+        { name:'Bruno Guimarães', pos:'ZM', rating:7.0, assists:1 },
+        { name:'Raphinha', pos:'RA', rating:6.5, sub:{out:40} },
+        { name:'Lucas Paquetá', pos:'OM', rating:6.5 },
+        { name:'Vinícius Júnior', pos:'LA', rating:8.1, goals:1, assists:1, sub:{out:81} },
+        { name:'Matheus Cunha', pos:'ST', rating:9.2, goals:2 },
+      ],
+      bench: [
+        { name:'Luiz Henrique', pos:'RA', sub:{in:40} },
+        { name:'Martinelli', pos:'LA', sub:{in:81} },
+        { name:'Igor Thiago', pos:'ST', sub:{in:75} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Johny Placide', pos:'TW', rating:6.0 },
+        { name:'Carlens Arcus', pos:'IV', rating:5.8, sub:{out:70} },
+        { name:'Hannes Delcroix', pos:'IV', rating:5.6 },
+        { name:'Ricardo Adé', pos:'IV', rating:5.7 },
+        { name:'Keeto Thermoncy', pos:'RM', rating:5.8 },
+        { name:'Martin Expérience', pos:'LM', rating:5.7 },
+        { name:'Jean-Ricner Bellegarde', pos:'ZM', rating:5.8 },
+        { name:'Steeven Saint-Duc', pos:'ZM', rating:5.7 },
+        { name:'Duckens Nazon', pos:'OM', rating:5.6 },
+        { name:'Frantzdy Pierrot', pos:'ST', rating:5.5, sub:{out:70} },
+        { name:'Carl Sainté', pos:'ST', rating:5.6 },
+      ],
+      bench: [
+        { name:'Dominique Simons', pos:'RV', sub:{in:70} },
+        { name:'Wilson Isidor', pos:'ST', sub:{in:70} },
+      ],
+      cards: [],
+    },
+  },
+  9: { // Deutschland 7:1 Curaçao - Quelle: Sofascore, Fotmob (Stand 14.06.2026)
+    homeFormation: '4-2-3-1',
+    awayFormation: '3-5-2',
+    home: {
+      startXI: [
+        { number:1, name:'Manuel Neuer', pos:'TW', rating:6.8 },
+        { number:6, name:'Joshua Kimmich', pos:'RV', rating:7.9, assists:2 },
+        { number:4, name:'Jonathan Tah', pos:'IV', rating:7.0 },
+        { number:23, name:'Nico Schlotterbeck', pos:'IV', rating:8.4, goals:1 },
+        { number:3, name:'Nathaniel Brown', pos:'LV', rating:7.2, sub:{out:73} },
+        { number:8, name:'Felix Nmecha', pos:'ZM', rating:8.6, assists:1, sub:{out:73} },
+        { number:21, name:'Aleksandar Pavlović', pos:'ZM', rating:7.1 },
+        { number:19, name:'Leroy Sané', pos:'LA', rating:6.9, sub:{out:46} },
+        { number:10, name:'Jamal Musiala', pos:'ZOM', rating:8.1, assists:1, sub:{out:64} },
+        { number:7, name:'Florian Wirtz', pos:'ROM', rating:7.5, assists:1, sub:{out:83} },
+        { number:9, name:'Kai Havertz', pos:'ST', rating:8.9, goals:2 },
+      ],
+      bench: [
+        { name:'Deniz Undav', pos:'ST', rating:8.9, goals:2, assists:1, sub:{in:46} },
+        { name:'Wilfried Anton', pos:'RV', sub:{in:83} },
+        { name:'Toni Rüdiger', pos:'IV', sub:{in:73} },
+        { name:'David Raum', pos:'LV', sub:{in:73} },
+        { name:'Leon Goretzka', pos:'ZM', sub:{in:73} },
+      ],
+      cards: [],
+    },
+    away: {
+      startXI: [
+        { name:'Eloy Room', pos:'TW', rating:6.0 },
+        { number:3, name:'Jurién Gaari', pos:'IV', rating:5.4 },
+        { number:18, name:'Armando Obispo', pos:'IV', rating:5.3 },
+        { number:23, name:'Riechedly Bazoer', pos:'IV', rating:5.6 },
+        { number:5, name:'Sherel Floranus', pos:'RM', rating:5.8, sub:{out:46} },
+        { number:10, name:'Leandro Bacuna', pos:'ZM', rating:5.5 },
+        { number:7, name:'Juninho Bacuna', pos:'ZM', rating:5.4 },
+        { number:8, name:'Livano Comenencia', pos:'LM', rating:6.9, goals:1 },
+        { number:21, name:'Tahith Chong', pos:'OM', rating:5.7, sub:{out:83} },
+        { number:9, name:'Jürgen Locadia', pos:'ST', rating:5.2, sub:{out:64} },
+      ],
+      bench: [
+        { name:'Sontje Hansen', pos:'RM', number:12, sub:{in:46} },
+        { name:'Jearl Margaritha', pos:'ST', number:16, sub:{in:64} },
+        { name:'Gervane Kastaneer', pos:'OM', number:19, sub:{in:83} },
+      ],
+      cards: [],
+    },
+  },
+};
+
+
+const GROUPS = {
+  A: { teams:[
+    { name:'Mexiko', flag:'🇲🇽' },
+    { name:'Südkorea', flag:'🇰🇷' },
+    { name:'Tschechien', flag:'🇨🇿' },
+    { name:'Südafrika', flag:'🇿🇦' },
+  ]},
+  B: { teams:[
+    { name:'Schweiz', flag:'🇨🇭' },
+    { name:'Kanada', flag:'🇨🇦' },
+    { name:'Bosnien', flag:'🇧🇦' },
+    { name:'Katar', flag:'🇶🇦' },
+  ]},
+  C: { teams:[
+    { name:'Schottland', flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+    { name:'Brasilien', flag:'🇧🇷' },
+    { name:'Marokko', flag:'🇲🇦' },
+    { name:'Haiti', flag:'🇭🇹' },
+  ]},
+  D: { teams:[
+    { name:'USA', flag:'🇺🇸' },
+    { name:'Australien', flag:'🇦🇺' },
+    { name:'Türkei', flag:'🇹🇷' },
+    { name:'Paraguay', flag:'🇵🇾' },
+  ]},
+  E: { teams:[
+    { name:'Deutschland', flag:'🇩🇪' },
+    { name:'Elfenbeinküste', flag:'🇨🇮' },
+    { name:'Ecuador', flag:'🇪🇨' },
+    { name:'Curaçao', flag:'🇨🇼' },
+  ]},
+  F: { teams:[
+    { name:'Schweden', flag:'🇸🇪' },
+    { name:'Niederlande', flag:'🇳🇱' },
+    { name:'Japan', flag:'🇯🇵' },
+    { name:'Tunesien', flag:'🇹🇳' },
+  ]},
+  G: { teams:[
+    { name:'Iran', flag:'🇮🇷' },
+    { name:'Neuseeland', flag:'🇳🇿' },
+    { name:'Ägypten', flag:'🇪🇬' },
+    { name:'Belgien', flag:'🇧🇪' },
+  ]},
+  H: { teams:[
+    { name:'Uruguay', flag:'🇺🇾' },
+    { name:'Saudi-Arabien', flag:'🇸🇦' },
+    { name:'Spanien', flag:'🇪🇸' },
+    { name:'Kap Verde', flag:'🇨🇻' },
+  ]},
+  I: { teams:[
+    { name:'Norwegen', flag:'🇳🇴' },
+    { name:'Frankreich', flag:'🇫🇷' },
+    { name:'Senegal', flag:'🇸🇳' },
+    { name:'Irak', flag:'🇮🇶' },
+  ]},
+  J: { teams:[
+    { name:'Argentinien', flag:'🇦🇷' },
+    { name:'Österreich', flag:'🇦🇹' },
+    { name:'Jordanien', flag:'🇯🇴' },
+    { name:'Algerien', flag:'🇩🇿' },
+  ]},
+  K: { teams:[
+    { name:'Kolumbien', flag:'🇨🇴' },
+    { name:'Portugal', flag:'🇵🇹' },
+    { name:'DR Kongo', flag:'🇨🇩' },
+    { name:'Usbekistan', flag:'🇺🇿' },
+  ]},
+  L: { teams:[
+    { name:'England', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+    { name:'Ghana', flag:'🇬🇭' },
+    { name:'Panama', flag:'🇵🇦' },
+    { name:'Kroatien', flag:'🇭🇷' },
+  ]},
+};
+
+const TEAMS = [
+  { name:'Deutschland', flag:'🇩🇪', group:'E', fifaRank:3, coach:'Julian Nagelsmann', formation:'4-2-3-1',
+    players:[
+      { name:'Manuel Neuer', pos:'TW', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok', sofaRating:6.8 },
+      { name:'Toni Rüdiger', pos:'IV', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok', sofaRating:7.2 },
+      { name:'Joshua Kimmich', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:0, assists:2, status:'ok', sofaRating:7.6 },
+      { name:'Jamal Musiala', pos:'AM', grade:'A', gradeClass:'grade-a', goals:1, assists:0, status:'ok', sofaRating:8.1 },
+      { name:'Florian Wirtz', pos:'AM', grade:'A-', gradeClass:'grade-a', goals:0, assists:1, status:'ok', sofaRating:7.5 },
+      { name:'Kai Havertz', pos:'ST', grade:'A+', gradeClass:'grade-a', goals:2, assists:0, status:'ok', sofaRating:8.3 },
+      { name:'Felix Nmecha', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:1, assists:0, status:'ok', sofaRating:8.6 },
+      { name:'Nico Schlotterbeck', pos:'IV', grade:'A', gradeClass:'grade-a', goals:1, assists:0, status:'ok', sofaRating:8.4 },
+      { name:'Deniz Undav', pos:'ST', grade:'A+', gradeClass:'grade-a', goals:1, assists:1, status:'ok', sofaRating:8.9 },
+      { name:'Leroy Sané', pos:'LA', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Knieprobleme' },
+      { name:'Thomas Müller', pos:'AM', grade:'B-', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:['Marco Reus (Knie)'],
+    strengths:['Tordrang', 'Mittelfeld', 'Pressing'],
+    weakness:'Umschalten', winChance:5
+  },
+  { name:'Argentinien', flag:'🇦🇷', group:'J', fifaRank:1, coach:'Lionel Scaloni', formation:'4-3-3',
+    players:[
+      { name:'Emiliano Martínez', pos:'TW', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok', sofaRating:6.9 },
+      { name:'Nicolás Otamendi', pos:'IV', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Rodrigo De Paul', pos:'ZM', grade:'A-', gradeClass:'grade-a', goals:0, assists:1, status:'ok', sofaRating:7.4 },
+      { name:'Lionel Messi', pos:'RF', grade:'A+', gradeClass:'grade-a', goals:3, assists:0, status:'ok', sofaRating:10.0 },
+      { name:'Julián Álvarez', pos:'ST', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Alexis Mac Allister', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:0, assists:1, status:'ok', sofaRating:7.7 },
+      { name:'Enzo Fernández', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Muskelzerrung' },
+      { name:'Lautaro Martínez', pos:'ST', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:['Lisandro Martínez (Sprunggelenk)'],
+    strengths:['Messi', 'Erfahrung', 'Set-Pieces'],
+    weakness:'Alter des Kaders', winChance:8
+  },
+  { name:'Frankreich', flag:'🇫🇷', group:'I', fifaRank:2, coach:'Didier Deschamps', formation:'4-3-3',
+    players:[
+      { name:'Mike Maignan', pos:'TW', grade:'A', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Dayot Upamecano', pos:'IV', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok', sofaRating:7.9 },
+      { name:'N\'Golo Kanté', pos:'ZM', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Kylian Mbappé', pos:'ST', grade:'A', gradeClass:'grade-a', goals:2, assists:0, status:'ok', sofaRating:8.1 },
+      { name:'Michael Olise', pos:'RA', grade:'A-', gradeClass:'grade-a', goals:0, assists:1, status:'ok', sofaRating:7.7 },
+      { name:'Adrien Rabiot', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok', sofaRating:7.4 },
+      { name:'Aurélien Tchouaméni', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Oberschenkel' },
+      { name:'Marcus Thuram', pos:'ST', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:['Lucas Hernández (Kreuzband)'],
+    strengths:['Mbappé', 'Tiefe Kader', 'Abwehr'],
+    weakness:'Kreativität in Block', winChance:9
+  },
+  { name:'Brasilien', flag:'🇧🇷', group:'C', fifaRank:5, coach:'Fernando Diniz', formation:'4-4-2',
+    players:[
+      { name:'Alisson', pos:'TW', grade:'A', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Marquinhos', pos:'IV', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Casemiro', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Vinícius Jr.', pos:'LA', grade:'A', gradeClass:'grade-a', goals:1, assists:0, status:'ok' },
+      { name:'Rodrygo', pos:'RA', grade:'B+', gradeClass:'grade-b', goals:0, assists:1, status:'ok' },
+      { name:'Endrick', pos:'ST', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Neymar Jr.', pos:'AM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Fitnessbedenken' },
+      { name:'Raphinha', pos:'RA', grade:'B+', gradeClass:'grade-b', goals:0, assists:1, status:'ok' },
+    ],
+    injured:['Gabriel Jesus (Knie)'],
+    strengths:['Offensive Vielfalt', 'Raphinha','Vinícius'],
+    weakness:'Konstanz', winChance:5
+  },
+  { name:'England', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', group:'L', fifaRank:4, coach:'Gareth Southgate', formation:'4-3-3',
+    players:[
+      { name:'Jordan Pickford', pos:'TW', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'John Stones', pos:'IV', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Declan Rice', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:0, assists:1, status:'ok' },
+      { name:'Jude Bellingham', pos:'AM', grade:'A+', gradeClass:'grade-a', goals:2, assists:1, status:'ok' },
+      { name:'Harry Kane', pos:'ST', grade:'A', gradeClass:'grade-a', goals:2, assists:0, status:'ok' },
+      { name:'Bukayo Saka', pos:'RA', grade:'A-', gradeClass:'grade-a', goals:0, assists:2, status:'ok' },
+      { name:'Phil Foden', pos:'AM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Marcus Rashford', pos:'LA', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Formtief' },
+    ],
+    injured:['Luke Shaw (Oberschenkel)'],
+    strengths:['Bellingham', 'Offensive Balance', 'Tore'],
+    weakness:'Druck-Spiele', winChance:6
+  },
+  { name:'Spanien', flag:'🇪🇸', group:'H', fifaRank:6, coach:'Luis de la Fuente', formation:'4-3-3',
+    players:[
+      { name:'Unai Simón', pos:'TW', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Aymeric Laporte', pos:'IV', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Pedri', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Gavi', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Álvaro Morata', pos:'ST', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Lamine Yamal', pos:'RA', grade:'A+', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Nico Williams', pos:'LA', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Fermín López', pos:'AM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:[],
+    strengths:['Ball-Besitz', 'Yamal', 'Pressing'],
+    weakness:'Torchancen-Verwertung', winChance:11
+  },
+  { name:'Portugal', flag:'🇵🇹', group:'K', fifaRank:7, coach:'Roberto Martínez', formation:'4-2-3-1',
+    players:[
+      { name:'Diogo Costa', pos:'TW', grade:'A', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Rúben Dias', pos:'IV', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Bernardo Silva', pos:'AM', grade:'A', gradeClass:'grade-a', goals:0, assists:1, status:'ok' },
+      { name:'Bruno Fernandes', pos:'AM', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Cristiano Ronaldo', pos:'ST', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Rafael Leão', pos:'LA', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'João Cancelo', pos:'RV', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Wadenproblem' },
+      { name:'Vitinha', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:['Pedro Neto (Muskel)'],
+    strengths:['Ronaldo Erfahrung', 'Bernardo Silva', 'Defensive'],
+    weakness:'Abhängigkeit von Ronaldo', winChance:5
+  },
+  { name:'Niederlande', flag:'🇳🇱', group:'F', fifaRank:8, coach:'Ronald Koeman', formation:'4-3-3',
+    players:[
+      { name:'Bart Verbruggen', pos:'TW', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Virgil van Dijk', pos:'IV', grade:'A', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Frenkie de Jong', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:1, status:'ok' },
+      { name:'Cody Gakpo', pos:'LA', grade:'A-', gradeClass:'grade-a', goals:1, assists:0, status:'ok' },
+      { name:'Memphis Depay', pos:'ST', grade:'B', gradeClass:'grade-b', goals:1, assists:0, status:'ok' },
+      { name:'Xavi Simons', pos:'AM', grade:'B+', gradeClass:'grade-b', goals:0, assists:1, status:'ok' },
+      { name:'Nathan Aké', pos:'IV', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Tijjani Reijnders', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:[],
+    strengths:['Van Dijk', 'Gakpo', 'Breite'],
+    weakness:'Konstanz', winChance:3
+  },
+  { name:'Österreich', flag:'🇦🇹', group:'J', fifaRank:14, coach:'Ralf Rangnick', formation:'4-2-3-1',
+    players:[
+      { name:'Patrick Pentz', pos:'TW', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'David Alaba', pos:'IV', grade:'A-', gradeClass:'grade-a', goals:0, assists:0, status:'ok' },
+      { name:'Marcel Sabitzer', pos:'ZM', grade:'A', gradeClass:'grade-a', goals:1, assists:1, status:'ok' },
+      { name:'Christoph Baumgartner', pos:'AM', grade:'A-', gradeClass:'grade-a', goals:1, assists:0, status:'ok' },
+      { name:'Marko Arnautovic', pos:'ST', grade:'B+', gradeClass:'grade-b', goals:1, assists:0, status:'ok' },
+      { name:'Florian Grillitsch', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Michael Gregoritsch', pos:'ST', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'doubt', note:'Oberschenkelprobleme' },
+      { name:'Konrad Laimer', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:1, status:'ok' },
+    ],
+    injured:['Nicolas Seiwald (Rotsperre)'],
+    strengths:['Pressing Rangnick', 'Sabitzer', 'Teamgeist'],
+    weakness:'Kader-Tiefe gegen Top-Teams', winChance:2
+  },
+  { name:'Norwegen', flag:'🇳🇴', group:'I', fifaRank:9, coach:'Ståle Solbakken', formation:'4-3-3',
+    players:[
+      { name:'Ørjan Nyland', pos:'TW', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Leo Skiri Østigård', pos:'IV', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok', sofaRating:7.5 },
+      { name:'Sander Berge', pos:'ZM', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Erling Haaland', pos:'ST', grade:'A+', gradeClass:'grade-a', goals:2, assists:0, status:'ok', sofaRating:9.2 },
+      { name:'Martin Ødegaard', pos:'AM', grade:'A-', gradeClass:'grade-a', goals:0, assists:1, status:'ok' },
+      { name:'David Møller Wolfe', pos:'LA', grade:'A-', gradeClass:'grade-a', goals:0, assists:1, status:'ok', sofaRating:7.6 },
+      { name:'Fredrik Aursnes', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Antonio Nusa', pos:'LA', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+    ],
+    injured:[],
+    strengths:['Haaland', 'Ødegaard', 'Physis'],
+    weakness:'Tiefe bei schwierigen Gegnern', winChance:2
+  },
+  { name:'Schweden', flag:'🇸🇪', group:'F', fifaRank:18, coach:'Jon Dahl Tomasson', formation:'4-4-2',
+    players:[
+      { name:'Robin Olsen', pos:'TW', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Victor Lindelöf', pos:'IV', grade:'B+', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Albin Ekdal', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Alexander Isak', pos:'ST', grade:'A', gradeClass:'grade-a', goals:2, assists:1, status:'ok' },
+      { name:'Dejan Kulusevski', pos:'RA', grade:'A-', gradeClass:'grade-a', goals:1, assists:2, status:'ok' },
+      { name:'Emil Forsberg', pos:'AM', grade:'B+', gradeClass:'grade-b', goals:1, assists:0, status:'ok' },
+      { name:'Mattias Svanberg', pos:'ZM', grade:'B', gradeClass:'grade-b', goals:0, assists:0, status:'ok' },
+      { name:'Zlatan Ibrahimović', pos:'Berater', grade:'—', gradeClass:'grade-c', goals:0, assists:0, status:'ok' },
+    ],
+    injured:[],
+    strengths:['Isak', 'Überraschungsfaktor', 'Physis'],
+    weakness:'Schwächerer Kader vs. Top-Teams', winChance:1
+  },
+];
+
+function showMatchDetail(id) {
+  const m = MATCHES.find(x => x.id === id);
+  if (!m) return;
+  const isFinished = m.status === 'done';
+  const isLiveNow = m.status === 'live';
+  const isDone = isFinished || isLiveNow; // beibehalten für restliche Logik unten (xG/Quote)
+  const hasKnownScore = m.homeScore != null && m.awayScore != null;
+
+  const scoreLine = isFinished
+    ? `${m.homeScore} – ${m.awayScore}`
+    : isLiveNow
+      ? (hasKnownScore ? `${m.homeScore} – ${m.awayScore} (live)` : `läuft – Spielstand folgt`)
+      : `${m.time} MESZ`;
+
+  const xgLine = (isDone && m.xgHome != null)
+    ? `<div class="modal-xg-line">
+         <span class="xg-val">${m.xgHome.toFixed(2)} xG</span>
+         <span class="xg-label">Expected Goals (Quelle: RealGM xG Tracker)</span>
+         <span class="xg-val">${m.xgAway.toFixed(2)} xG</span>
+       </div>`
+    : (isDone && m.estimatedXg
+        ? `<div class="modal-xg-line xg-row-forecast">
+             <span class="xg-val xg-val-forecast">${m.estimatedXg.home.toFixed(2)} xG</span>
+             <span class="xg-label">xG berechnet ⚡ – kein recherchierter Wert verfügbar, automatisch aus unserem Stärke-Modell geschätzt</span>
+             <span class="xg-val xg-val-forecast">${m.estimatedXg.away.toFixed(2)} xG</span>
+           </div>`
+        : (isDone
+            ? `<div class="modal-xg-line"><span class="xg-label">ℹ️ Für dieses Spiel liegt noch kein xG-Wert vor.</span></div>`
+            : (() => {
+                const f = calcXgForecast(m);
+                if (!f) return '';
+                return `<div class="modal-xg-line xg-row-forecast">
+                   <span class="xg-val xg-val-forecast">${f.home.toFixed(2)} xG</span>
+                   <span class="xg-label">xG-Prognose ⚡ – kalibriert auf entvigte Quoten mehrerer Buchmacher (oddschecker), sonst eigenes Stärke-Modell</span>
+                   <span class="xg-val xg-val-forecast">${f.away.toFixed(2)} xG</span>
+                 </div>`;
+              })()));
+
+  const prob = !isDone ? calcProb(m, m) : null;
+  const probLine = prob ? `
+    <div class="prob-bar" style="margin-top:14px">
+      <div class="prob-row"><span class="prob-label">${m.home}</span><div class="prob-track"><div class="prob-fill prob-fill-win" style="width:${prob.win}%"></div></div><span class="prob-pct">${prob.win}%</span></div>
+      <div class="prob-row"><span class="prob-label">Unent.</span><div class="prob-track"><div class="prob-fill prob-fill-draw" style="width:${prob.draw}%"></div></div><span class="prob-pct">${prob.draw}%</span></div>
+      <div class="prob-row"><span class="prob-label">${m.away}</span><div class="prob-track"><div class="prob-fill prob-fill-lose" style="width:${prob.lose}%"></div></div><span class="prob-pct">${prob.lose}%</span></div>
+    </div>` : '';
+
+  const scorersData = isFinished ? getScorers(m) : { home: [], away: [] };
+  const scorersLine = (scorersData.home.length || scorersData.away.length) ? `
+    <div class="modal-scorers">
+      <div class="modal-scorers-title">⚽ Torschützen</div>
+      <div class="scorers-row" style="font-size:0.85rem">
+        <div class="scorers-col">${formatScorers(scorersData.home)}</div>
+        <div class="scorers-col scorers-col-away">${formatScorers(scorersData.away)}</div>
+      </div>
+    </div>` : '';
+
+  const lineupSection = isFinished ? renderLineupSection(m) : '';
+
+  const box = document.getElementById('matchModalBox');
+  box.innerHTML = `
+    <button class="modal-close" onclick="closeMatchModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-team">
+        <div class="team-flag-big">${m.homeFlag}</div>
+        <div class="modal-team-name">${m.home}</div>
+      </div>
+      <div class="modal-vs">${scoreLine}</div>
+      <div class="modal-team">
+        <div class="team-flag-big">${m.awayFlag}</div>
+        <div class="modal-team-name">${m.away}</div>
+      </div>
+    </div>
+    <div class="modal-meta">Gruppe ${m.group} · 📍 ${m.venue} · ${m.date}</div>
+    ${scorersLine}
+    ${xgLine}
+    ${probLine}
+    ${lineupSection}
+  `;
+  document.getElementById('matchModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMatchModal() {
+  document.getElementById('matchModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeMatchModal();
+});
+
+// Basis: Sofascore Power Rankings (Vorturnier-Stärke, 70% Gewichtung) kombiniert mit
+// der tatsächlichen xG-Differenz im bisherigen Turnierverlauf (RealGM xG Tracker, 30% Gewichtung).
+// Damit fließt nicht nur die Einschätzung vor dem Turnier ein, sondern auch die reale Form bisher.
+// Sofascore Power Rankings (Vorturnier-Stärke, Stand 09.06.2026) für alle 48 Teams.
+// Dient als Basis-Anker, damit ein einzelnes untypisches Spiel (z.B. ein schwacher xG-Auftakt
+// eines Top-Teams) die Prognose nicht stärker verzerrt als die tatsächliche Mannschaftsstärke.
+// Torschützen & Vorlagengeber, Stand 19.06.2026 (Quelle: planetfootball.com, FIFA Golden Boot Tracker, FOX Sports)
+const TOP_SCORERS = [
+  { name:'Lionel Messi', flag:'🇦🇷', goals:3 },
+  { name:'Jonathan David', flag:'🇨🇦', goals:3 },
+  { name:'Kylian Mbappé', flag:'🇫🇷', goals:2 },
+  { name:'Erling Haaland', flag:'🇳🇴', goals:2 },
+  { name:'Harry Kane', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals:2 },
+];
+const TOP_ASSISTS = [
+  { name:'Alexander Isak', flag:'🇸🇪', assists:2 },
+  { name:'Chris Wood', flag:'🇳🇿', assists:2 },
+  { name:'Deniz Undav', flag:'🇩🇪', assists:2 },
+  { name:'Ryan Gravenberch', flag:'🇳🇱', assists:2 },
+  { name:'Joshua Kimmich', flag:'🇩🇪', assists:2 },
+];
+
+const POWER_RANK = {
+  'Spanien':2026,'Frankreich':2015,'Argentinien':1999,'Brasilien':1945,'England':1942,'Portugal':1941,
+  'Deutschland':1864,'Niederlande':1860,'Belgien':1852,'Japan':1828,'Kroatien':1827,'Marokko':1824,
+  'Kolumbien':1824,'Senegal':1794,'Schweiz':1793,'Mexiko':1792,'Uruguay':1791,'Türkei':1788,
+  'Ecuador':1786,'Norwegen':1773,'Österreich':1763,'USA':1762,'Iran':1735,'Australien':1729,
+  'Südkorea':1729,'Kanada':1725,'Algerien':1719,'Paraguay':1715,'Ägypten':1713,'Schottland':1709,
+  'Elfenbeinküste':1705,'Schweden':1704,'Panama':1703,'Tschechien':1695,'Usbekistan':1673,
+  'DR Kongo':1669,'Tunesien':1668,'Irak':1655,'Jordanien':1651,'Bosnien':1650,'Saudi-Arabien':1649,
+  'Südafrika':1645,'Katar':1639,'Kap Verde':1621,'Ghana':1620,'Neuseeland':1605,'Haiti':1601,
+  'Curaçao':1597,
+};
+
+const WM_ODDS = [
+  { name:'Spanien', flag:'🇪🇸', pct:11 },
+  { name:'Frankreich', flag:'🇫🇷', pct:9 },
+  { name:'Argentinien', flag:'🇦🇷', pct:8 },
+  { name:'England', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', pct:6 },
+  { name:'Deutschland', flag:'🇩🇪', pct:5 },
+  { name:'Brasilien', flag:'🇧🇷', pct:5 },
+  { name:'Portugal', flag:'🇵🇹', pct:5 },
+  { name:'Niederlande', flag:'🇳🇱', pct:3 },
+  { name:'Österreich', flag:'🇦🇹', pct:3 },
+  { name:'Norwegen', flag:'🇳🇴', pct:2 },
+  { name:'Schweden', flag:'🇸🇪', pct:1 },
+  { name:'Andere', flag:'🌍', pct:42 },
+];
+
+// ========== PROBABILITY CALC ==========
+// ========== xG-PROGNOSE FÜR KOMMENDE SPIELE ==========
+// Berechnet je Team den Durchschnitt aus bisherigen, echten xG-Werten (erzielt & zugelassen)
+// in der laufenden WM 2026 (nicht aus früheren Turnieren) und leitet daraus eine grobe
+// Prognose fürs nächste Spiel ab (kein gemessener Wert!).
+function getTeamXgAverages() {
+  const xgFor = {}, xgAgainst = {}, count = {};
+  MATCHES.forEach(m => {
+    if (m.xgHome == null) return;
+    xgFor[m.home] = (xgFor[m.home] || 0) + m.xgHome;
+    xgAgainst[m.home] = (xgAgainst[m.home] || 0) + m.xgAway;
+    count[m.home] = (count[m.home] || 0) + 1;
+    xgFor[m.away] = (xgFor[m.away] || 0) + m.xgAway;
+    xgAgainst[m.away] = (xgAgainst[m.away] || 0) + m.xgHome;
+    count[m.away] = (count[m.away] || 0) + 1;
+  });
+  const avg = {};
+  Object.keys(xgFor).forEach(t => {
+    avg[t] = { for: xgFor[t] / count[t], against: xgAgainst[t] / count[t], games: count[t] };
+  });
+  return avg;
+}
+
+// Liga-Basiswert: durchschnittlich erwartete Tore eines Teams gegen einen gleich starken Gegner.
+const BASE_XG = 1.3;
+
+// Sucht iterativ das xG-Paar, dessen Poisson-Verteilung am besten zu vorgegebenen
+// Sieg/Remis/Niederlage-Wahrscheinlichkeiten passt (z.B. aus echten Buchmacher-Quoten).
+// So bleibt die angezeigte xG-Prognose konsistent mit der tatsächlichen Marktquote.
+function xgFromProbs(targetWin, targetDraw, targetLose, hintHome, hintAway) {
+  let bestHome = hintHome, bestAway = hintAway, bestErr = Infinity;
+  for (let h = 0.3; h <= 3.5; h += 0.1) {
+    for (let a = 0.3; a <= 3.5; a += 0.1) {
+      const p = probsFromXg(h, a);
+      const err = Math.abs(p.win - targetWin) + Math.abs(p.draw - targetDraw) + Math.abs(p.lose - targetLose);
+      if (err < bestErr) { bestErr = err; bestHome = h; bestAway = a; }
+    }
+  }
+  return { home: bestHome, away: bestAway };
+}
+
+function calcXgForecast(m) {
+  const avgs = getTeamXgAverages();
+  const h = avgs[m.home];
+  const a = avgs[m.away];
+
+  const hPower = POWER_RANK[m.home] ?? 1700;
+  const aPower = POWER_RANK[m.away] ?? 1700;
+  // Stärke-Differenz zwischen den Teams (positiv = Heimteam stärker), in xG-Vorteil übersetzt.
+  // 400 Punkte Differenz (größter Abstand im Feld) entsprechen ca. +/-1.1 xG Vorteil.
+  const diff = (hPower - aPower) / 400 * 1.1;
+  let hBase = BASE_XG + diff / 2;
+  let aBase = BASE_XG - diff / 2;
+  hBase = Math.max(0.4, hBase);
+  aBase = Math.max(0.4, aBase);
+
+  // Echte Turnier-xG-Werte fließen als moderate Korrektur ein, gewichtet nach Spielanzahl
+  // (1 Spiel = wenig Einfluss, ab 4-5 Spielen deutlich mehr).
+  const hWeight = h ? Math.min(h.games / 5, 1) * 0.35 : 0;
+  const aWeight = a ? Math.min(a.games / 5, 1) * 0.35 : 0;
+
+  const hOff = h ? hBase * (1 - hWeight) + h.for * hWeight : hBase;
+  const hDef = h ? 1 * (1 - hWeight) + (h.against / BASE_XG) * hWeight : 1;
+  const aOff = a ? aBase * (1 - aWeight) + a.for * aWeight : aBase;
+  const aDef = a ? 1 * (1 - aWeight) + (a.against / BASE_XG) * aWeight : 1;
+
+  const modelHome = hOff * aDef;
+  const modelAway = aOff * hDef;
+
+  // Liegt eine echte Buchmacher-Quote vor (mehrere Wettanbieter, entvigt), hat sie Vorrang:
+  // Märkte bündeln mehr Information (Verletzungen, Aufstellungen, Wetten-Volumen) als unser
+  // eigenes Stärke-Modell. Die xG-Prognose wird dann so gewählt, dass sie zu dieser Quote passt.
+  if (m.bookProb) {
+    return xgFromProbs(m.bookProb.win, m.bookProb.draw, m.bookProb.lose, modelHome, modelAway);
+  }
+
+  return { home: modelHome, away: modelAway };
+}
+
+// Poisson-Näherung: aus zwei xG-Erwartungswerten Sieg/Remis/Niederlage-Wahrscheinlichkeit ableiten.
+function poissonProb(lambda, k) {
+  return Math.exp(-lambda) * Math.pow(lambda, k) / factorial(k);
+}
+function factorial(n) {
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
+function probsFromXg(xgHome, xgAway) {
+  const maxGoals = 8;
+  let win = 0, draw = 0, lose = 0;
+  for (let h = 0; h <= maxGoals; h++) {
+    for (let a = 0; a <= maxGoals; a++) {
+      const p = poissonProb(xgHome, h) * poissonProb(xgAway, a);
+      if (h > a) win += p;
+      else if (h === a) draw += p;
+      else lose += p;
+    }
+  }
+  const total = win + draw + lose;
+  return {
+    win: Math.round((win / total) * 100),
+    draw: Math.round((draw / total) * 100),
+    lose: Math.round((lose / total) * 100),
+  };
+}
+
+function calcProb(home, away) {
+  // Echte Buchmacher-Quote hat Vorrang (entvigter Durchschnitt mehrerer Wettanbieter).
+  if (home.bookProb) {
+    return { win: home.bookProb.win, draw: home.bookProb.draw, lose: home.bookProb.lose };
+  }
+
+  // Sonst: aus dem eigenen xG-Stärke-Modell ableiten.
+  const forecast = calcXgForecast(home);
+  if (forecast) {
+    const p = probsFromXg(forecast.home, forecast.away);
+    const diff = 100 - (p.win + p.draw + p.lose);
+    p.draw += diff;
+    return p;
+  }
+
+  // Letzter Fallback: alte Form/FIFA-Rang-Schätzung
+  const formScore = (form) => form.reduce((s,r) => s + (r==='W'?3:r==='D'?1:0), 0) / 15;
+  const hf = formScore(home.homeForm);
+  const af = formScore(away.awayForm);
+  const teams = TEAMS;
+  const ht = teams.find(t => t.name === home.home);
+  const at = teams.find(t => t.name === away.away);
+  const hRank = ht ? (20 - Math.min(ht.fifaRank, 19)) / 19 : 0.4;
+  const aRank = at ? (20 - Math.min(at.fifaRank, 19)) / 19 : 0.4;
+  const hPower = hf * 0.5 + hRank * 0.5;
+  const aPower = af * 0.5 + aRank * 0.5;
+  const total = hPower + aPower + 0.2;
+  let win = Math.round((hPower / total) * 100);
+  let lose = Math.round((aPower / total) * 100);
+  let draw = 100 - win - lose;
+  if (draw < 5) { draw = 5; win -= 3; lose -= 2; }
+  return { win: Math.max(5, win), draw: Math.max(5, draw), lose: Math.max(5, lose) };
+}
+
+// ========== RENDER FUNCTIONS ==========
+
+function formDots(form) {
+  return form.map(r => `<span class="form-dot form-${r.toLowerCase()}"></span>`).join('');
+}
+
+function formatScorers(scorers) {
+  if (!scorers || !scorers.length) return '';
+  return scorers.map(g => `<div class="scorer-entry">⚽ ${g.name}${g.minute ? ` <span class="scorer-minute">${g.minute}'</span>` : ''}</div>`).join('');
+}
+
+// Leitet Torschützen aus dem ausführlichen Spielbericht (MATCH_LINEUPS) ab, falls auf dem
+// Match-Objekt selbst keine scorersHome/scorersAway-Liste hinterlegt ist. So muss die Info
+// nicht doppelt gepflegt werden - der Spielbericht ist die Quelle der Wahrheit für Tore.
+function getScorers(m) {
+  if (m.scorersHome || m.scorersAway) {
+    return { home: m.scorersHome || [], away: m.scorersAway || [] };
+  }
+  const lineup = MATCH_LINEUPS[m.id];
+  if (!lineup) return { home: [], away: [] };
+  const extract = (teamData) => {
+    if (!teamData) return [];
+    const all = [...(teamData.startXI || []), ...(teamData.bench || [])];
+    const scorers = [];
+    all.forEach(p => {
+      if (p.goals) {
+        for (let i = 0; i < p.goals; i++) scorers.push({ name: p.name });
+      }
+    });
+    return scorers;
+  };
+  return { home: extract(lineup.home), away: extract(lineup.away) };
+}
+
+// ========== SPIELBERICHT-RENDERING (Aufstellung, Bank, Karten, Noten) ==========
+function ratingClass(r) {
+  if (r == null) return 'rating-none';
+  if (r >= 8) return 'rating-great';
+  if (r >= 7) return 'rating-good';
+  if (r >= 6) return 'rating-ok';
+  return 'rating-poor';
+}
+
+function lastName(fullName) {
+  const parts = fullName.trim().split(' ');
+  return parts[parts.length - 1];
+}
+
+// Verteilt eine Formation (z.B. "4-2-3-1") auf y-Reihen für eine SVG-Spielfeldhälfte.
+// side: 'home' (unten, Linien Richtung Mitte nach oben) oder 'away' (oben, gespiegelt)
+// Verteilt eine Formation vertikal auf einem eigenständigen Mini-Spielfeld:
+// Torwart unten an der Grundlinie, Reihen Richtung oben (offenes Spielfeldende).
+function layoutFormationVertical(formation, startXI, pitchWidth, pitchHeight) {
+  const lines = formation.split('-').map(n => parseInt(n, 10)).filter(n => !isNaN(n));
+  const gk = startXI.find(p => p.pos === 'TW') || startXI[0];
+  const outfield = startXI.filter(p => p !== gk);
+
+  const rows = [];
+  let idx = 0;
+  lines.forEach(count => {
+    rows.push(outfield.slice(idx, idx + count));
+    idx += count;
+  });
+
+  const positions = [];
+  const totalLines = rows.length;
+  const edgeMargin = pitchHeight * 0.09;   // Abstand Torwart/Grundlinie unten
+  const topMargin = pitchHeight * 0.08;    // Abstand vorderste Reihe/oberer Rand
+  positions.push({ player: gk, x: pitchWidth / 2, y: pitchHeight - edgeMargin, isGk: true });
+
+  rows.forEach((row, li) => {
+    const rowProgress = (li + 1) / totalLines; // 0..1, 1 = vorderste Reihe oben
+    const y = (pitchHeight - edgeMargin) - rowProgress * (pitchHeight - edgeMargin - topMargin);
+    row.forEach((p, pi) => {
+      const x = (pi + 1) * (pitchWidth / (row.length + 1));
+      positions.push({ player: p, x, y, isGk: false });
+    });
+  });
+  return positions;
+}
+
+function renderPitchPlayer(pos) {
+  const p = pos.player;
+  const cls = ratingClass(p.rating);
+  const badges = [];
+  if (p.goals) badges.push(`<span class="pitch-badge pitch-badge-goal">⚽${p.goals > 1 ? p.goals : ''}</span>`);
+  if (p.assists) badges.push(`<span class="pitch-badge pitch-badge-assist">👟${p.assists > 1 ? p.assists : ''}</span>`);
+  if (p.card === 'yellow') badges.push(`<span class="pitch-badge pitch-badge-yellow"></span>`);
+  if (p.card === 'red') badges.push(`<span class="pitch-badge pitch-badge-red"></span>`);
+  if (p.card === 'yellow-red') badges.push(`<span class="pitch-badge pitch-badge-yellow"></span><span class="pitch-badge pitch-badge-red"></span>`);
+  return `
+    <div class="pitch-player" style="left:${pos.x}%; top:${pos.y}%;">
+      <div class="pitch-player-dot ${cls}">${p.number ?? ''}</div>
+      <div class="pitch-player-badges">${badges.join('')}</div>
+      <div class="pitch-player-name">${lastName(p.name)}</div>
+      ${p.rating != null ? `<div class="pitch-player-rating ${cls}">${p.rating.toFixed(1)}</div>` : ''}
+    </div>`;
+}
+
+// Ein einzelnes, eigenständiges vertikales Mini-Spielfeld für ein Team.
+function renderSingleTeamPitch(teamData, teamName, formation) {
+  const PITCH_W = 100, PITCH_H = 100;
+  const positions = layoutFormationVertical(formation, teamData.startXI, PITCH_W, PITCH_H);
+  return `
+    <div class="pitch-team-col">
+      <div class="pitch-team-label">${teamName} <span class="lineup-formation">(${formation})</span></div>
+      <div class="pitch-field pitch-field-vertical">
+        <svg viewBox="0 0 200 320" class="pitch-svg-lines" preserveAspectRatio="none">
+          <rect x="1" y="1" width="198" height="318" class="pitch-outline" />
+          <rect x="55" y="244" width="90" height="75" class="pitch-line-fill" />
+          <path d="M 75 244 A 25 25 0 0 1 125 244" class="pitch-line-fill" />
+        </svg>
+        ${positions.map(renderPitchPlayer).join('')}
+      </div>
+    </div>`;
+}
+
+function renderPitchView(lineup, homeTeamName, awayTeamName) {
+  return `
+    <div class="pitch-wrap">
+      <div class="pitch-two-fields">
+        ${renderSingleTeamPitch(lineup.home, homeTeamName, lineup.homeFormation)}
+        ${renderSingleTeamPitch(lineup.away, awayTeamName, lineup.awayFormation)}
+      </div>
+    </div>`;
+}
+
+function renderPlayerRow(p, isBench) {
+  const numHtml = p.number ? `<span class="player-number">${p.number}</span>` : '';
+  const ratingHtml = p.rating != null
+    ? `<span class="player-rating ${ratingClass(p.rating)}">${p.rating.toFixed(1)}</span>`
+    : '';
+  const goalsHtml = p.goals ? Array(p.goals).fill('⚽').join('') : '';
+  const assistsHtml = p.assists ? Array(p.assists).fill('🅰️').join('') : '';
+  const cardHtml = p.card === 'yellow' ? `<span class="card-icon card-yellow"></span>`
+    : p.card === 'red' ? `<span class="card-icon card-red"></span>`
+    : p.card === 'yellow-red' ? `<span class="card-icon card-yellow"></span><span class="card-icon card-red"></span>`
+    : '';
+  const subHtml = p.sub
+    ? (p.sub.in != null ? `<span class="sub-info sub-in">↑${p.sub.in}'</span>` : '')
+      + (p.sub.out != null ? `<span class="sub-info sub-out">↓${p.sub.out}'</span>` : '')
+    : '';
+  return `
+    <div class="player-row ${isBench ? 'player-row-bench' : ''}">
+      ${numHtml}
+      <span class="player-pos-tag">${p.pos || ''}</span>
+      <span class="player-fullname">${p.name}</span>
+      <span class="player-extras">${goalsHtml}${assistsHtml}${cardHtml}${subHtml}</span>
+      ${ratingHtml}
+    </div>`;
+}
+
+function renderLineupSection(m) {
+  const lineup = MATCH_LINEUPS[m.id];
+  if (!lineup) {
+    return `<div class="no-lineup-msg">📋 Für dieses Spiel liegt noch kein detaillierter Spielbericht vor.</div>`;
+  }
+  const renderBenchBlock = (teamData, teamName) => `
+    <div class="lineup-team-block">
+      <div class="lineup-team-title">${teamName}</div>
+      ${teamData.bench && teamData.bench.length ? teamData.bench.map(p => renderPlayerRow(p, true)).join('') : `<div class="no-lineup-msg" style="padding:10px">Keine Bankdaten verfügbar</div>`}
+    </div>`;
+
+  return `
+    <div class="lineup-report">
+      <div class="lineup-report-title">📋 Spielbericht – Aufstellungen</div>
+      ${renderPitchView(lineup, m.home, m.away)}
+      <div class="lineup-subtitle" style="text-align:center; margin-top:18px">🪑 Bank</div>
+      <div class="lineup-teams-grid">
+        ${renderBenchBlock(lineup.home, m.home)}
+        ${renderBenchBlock(lineup.away, m.away)}
+      </div>
+    </div>`;
+}
+
+
+function renderMatchCard(m) {
+  const prob = calcProb(m, m);
+  const isLive = m.status === 'live';
+  const isDone = m.status === 'done';
+  const isAwaiting = m.status === 'awaiting_result';
+  const scorersData = isDone ? getScorers(m) : { home: [], away: [] };
+  const hasKnownScore = m.homeScore != null && m.awayScore != null;
+  const homeDisplayScore = isDone ? m.homeScore : (isLive && hasKnownScore ? m.homeScore : '');
+  const awayDisplayScore = isDone ? m.awayScore : (isLive && hasKnownScore ? m.awayScore : '');
+  const scoreHTML = isDone
+    ? `<div class="score">${homeDisplayScore} – ${awayDisplayScore}</div>`
+    : isLive
+      ? (hasKnownScore
+          ? `<div class="score">${homeDisplayScore} – ${awayDisplayScore}</div>`
+          : `<div class="score-vs">Spielstand folgt</div>`)
+      : isAwaiting
+        ? `<div class="score-vs">Ergebnis folgt</div>`
+        : `<div class="score-vs">vs</div>`;
+  const statusHTML = isLive
+    ? `<span class="match-status-live">● LIVE</span>`
+    : isDone ? `<span class="match-status-done">✓ FT</span>`
+    : isAwaiting ? `<span class="match-status-soon">⏳ Ergebnis ausstehend</span>`
+    : `<span class="match-status-soon">🕐 ${m.time}</span>`;
+  const xgForecast = (!isDone && !isAwaiting) ? calcXgForecast(m) : null;
+
+  return `
+  <div class="match-card" onclick="showMatchDetail(${m.id})">
+    <div class="match-meta">
+      <span class="match-group badge badge-blue">Gruppe ${m.group}</span>
+      ${statusHTML}
+    </div>
+    <div class="match-teams">
+      <div class="team-block">
+        <span class="team-flag">${m.homeFlag}</span>
+        <div class="team-name" title="${m.home}">${m.home}</div>
+        <div class="form-dots">${formDots(m.homeForm)}</div>
+      </div>
+      <div class="score-block">${scoreHTML}</div>
+      <div class="team-block">
+        <span class="team-flag">${m.awayFlag}</span>
+        <div class="team-name" title="${m.away}">${m.away}</div>
+        <div class="form-dots">${formDots(m.awayForm)}</div>
+      </div>
+    </div>
+    ${isDone && (scorersData.home.length || scorersData.away.length) ? `
+    <div class="scorers-row">
+      <div class="scorers-col">${formatScorers(scorersData.home)}</div>
+      <div class="scorers-col scorers-col-away">${formatScorers(scorersData.away)}</div>
+    </div>` : ''}
+    ${isDone && m.xgHome != null ? `
+    <div class="xg-row">
+      <span class="xg-val">${m.xgHome.toFixed(2)} xG</span>
+      <span class="xg-label">Expected Goals</span>
+      <span class="xg-val">${m.xgAway.toFixed(2)} xG</span>
+    </div>` : ''}
+    ${isDone && m.xgHome == null && m.estimatedXg ? `
+    <div class="xg-row xg-row-forecast">
+      <span class="xg-val xg-val-forecast">${m.estimatedXg.home.toFixed(2)} xG</span>
+      <span class="xg-label">xG berechnet ⚡ (kein recherchierter Wert)</span>
+      <span class="xg-val xg-val-forecast">${m.estimatedXg.away.toFixed(2)} xG</span>
+    </div>` : ''}
+    ${!isDone && !isAwaiting && xgForecast ? `
+    <div class="xg-row xg-row-forecast">
+      <span class="xg-val xg-val-forecast">${xgForecast.home.toFixed(2)} xG</span>
+      <span class="xg-label">xG-Prognose ⚡</span>
+      <span class="xg-val xg-val-forecast">${xgForecast.away.toFixed(2)} xG</span>
+    </div>` : ''}
+    ${isAwaiting ? `
+    <div class="xg-row">
+      <span class="xg-label">⏳ Spiel wurde angepfiffen, offizielles Ergebnis liegt noch nicht vor</span>
+    </div>` : ''}
+    ${!isDone && !isAwaiting ? `
+    <div class="prob-bar">
+      <div class="prob-row"><span class="prob-label">${m.home}</span><div class="prob-track"><div class="prob-fill prob-fill-win" style="width:${prob.win}%"></div></div><span class="prob-pct">${prob.win}%</span></div>
+      <div class="prob-row"><span class="prob-label">Unent.</span><div class="prob-track"><div class="prob-fill prob-fill-draw" style="width:${prob.draw}%"></div></div><span class="prob-pct">${prob.draw}%</span></div>
+      <div class="prob-row"><span class="prob-label">${m.away}</span><div class="prob-track"><div class="prob-fill prob-fill-lose" style="width:${prob.lose}%"></div></div><span class="prob-pct">${prob.lose}%</span></div>
+    </div>` : ''}
+    <div class="match-time">📍 ${m.venue} · ${m.date}${!isDone ? ' · ' + m.time + ' MESZ' : ''}</div>
+  </div>`;
+}
+
+// Berechnet die Gruppentabelle live aus den tatsächlichen MATCHES-Ergebnissen,
+// statt sie fest einzutragen. Läuft bei jedem Rendern neu, bleibt also automatisch aktuell.
+function computeGroupStandings(groupKey) {
+  const g = GROUPS[groupKey];
+  const stats = {};
+  g.teams.forEach(t => {
+    stats[t.name] = { name: t.name, flag: t.flag, played: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
+  });
+
+  MATCHES
+    .filter(m => m.group === groupKey && m.status === 'done')
+    .forEach(m => {
+      const home = stats[m.home];
+      const away = stats[m.away];
+      if (!home || !away) return; // Spiel betrifft ein Team außerhalb dieser Gruppen-Definition
+      home.played++; away.played++;
+      home.gf += m.homeScore; home.ga += m.awayScore;
+      away.gf += m.awayScore; away.ga += m.homeScore;
+      if (m.homeScore > m.awayScore) { home.w++; home.pts += 3; away.l++; }
+      else if (m.homeScore < m.awayScore) { away.w++; away.pts += 3; home.l++; }
+      else { home.d++; away.d++; home.pts += 1; away.pts += 1; }
+    });
+
+  return Object.values(stats);
+}
+
+function renderGroupTable(groupKey) {
+  const teams = computeGroupStandings(groupKey);
+  const sorted = [...teams].sort((a,b) => {
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    const aDiff = a.gf - a.ga, bDiff = b.gf - b.ga;
+    return bDiff - aDiff;
+  });
+  const rows = sorted.map((t, i) => {
+    const dotClass = i < 2 ? 'q-direct' : i === 2 ? 'q-maybe' : 'q-out';
+    return `<tr>
+      <td><span class="qualify-dot ${dotClass}"></span><strong>${i+1}</strong></td>
+      <td>${t.flag} ${t.name}</td>
+      <td>${t.played}</td>
+      <td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+      <td>${t.gf}:${t.ga}</td>
+      <td><span class="pts-badge">${t.pts}</span></td>
+    </tr>`;
+  }).join('');
+  return `
+  <div class="card group-section">
+    <div class="group-label">Gruppe ${groupKey}</div>
+    <table>
+      <thead><tr><th>#</th><th>Team</th><th>Sp</th><th>S</th><th>U</th><th>N</th><th>Tore</th><th>Pts</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="margin-top:10px;font-size:0.7rem;color:var(--muted);display:flex;gap:12px">
+      <span><span class="qualify-dot q-direct" style="display:inline-block"></span> Weiter</span>
+      <span><span class="qualify-dot q-maybe" style="display:inline-block"></span> Möglich</span>
+      <span><span class="qualify-dot q-out" style="display:inline-block"></span> Ausscheiden</span>
+    </div>
+  </div>`;
+}
+
+// ========== SECTIONS ==========
+
+// Wandelt Datum (DD.MM.) + Uhrzeit (HH:MM) in Minuten seit Jahresbeginn um, für chronologische Sortierung.
+function toMinutes(m) {
+  const [d, mo] = m.date.split('.').map(Number);
+  const [h, mi] = m.time.split(':').map(Number);
+  return (mo * 31 + d) * 1440 + h * 60 + mi;
+}
+
+function renderDashboard() {
+  // Heutige/anstehende Spiele: live, oder in den nächsten 24h angesetzt - nie 'done'.
+  // Berechnet dynamisch aus der aktuellen Browser-Uhrzeit, nicht aus fest eingetragenen Daten,
+  // damit das Dashboard sich von selbst weiterbewegt statt an einem festen Datum hängen zu bleiben.
+  const nowMin = (() => {
+    const n = new Date();
+    return (n.getUTCMonth() + 1) * 31 * 1440 + n.getUTCDate() * 1440 + n.getUTCHours() * 60 + n.getUTCMinutes() + 120; // +120 = MESZ
+  })();
+  const today = MATCHES
+    .filter(m => m.status !== 'done')
+    .filter(m => m.status === 'live' || (toMinutes(m) - nowMin >= -130 && toMinutes(m) - nowMin <= 24 * 60))
+    .sort((a, b) => toMinutes(a) - toMinutes(b));
+  document.getElementById('todayMatches').innerHTML = today.slice(0,6).map(renderMatchCard).join('');
+
+  // Top 5 Torschützen
+  document.getElementById('topScorers').innerHTML = TOP_SCORERS.map((p,i) => `
+    <div class="odds-card" style="margin-bottom:8px">
+      <div class="odds-rank">#${i+1}</div>
+      <div class="odds-flag">${p.flag}</div>
+      <div class="odds-name">${p.name}</div>
+      <div class="odds-pct">${p.goals} ⚽</div>
+    </div>`).join('');
+
+  // Top 5 Assists
+  document.getElementById('topAssists').innerHTML = TOP_ASSISTS.map((p,i) => `
+    <div class="odds-card" style="margin-bottom:8px">
+      <div class="odds-rank">#${i+1}</div>
+      <div class="odds-flag">${p.flag}</div>
+      <div class="odds-name">${p.name}</div>
+      <div class="odds-pct">${p.assists} 🅰️</div>
+    </div>`).join('');
+
+  // Highlights
+  const highlights = [
+    { icon:'⚽', val:'7:1', lbl:'Deutschland vs Curaçao', color:'var(--accent2)' },
+    { icon:'🔥', val:'3:0', lbl:'Kanada vs Katar', color:'var(--accent3)' },
+    { icon:'⭐', val:'3 Tore', lbl:'Messi & Jonathan David', color:'var(--accent)' },
+    { icon:'🏆', val:'4:1', lbl:'Schweiz führt Gruppe B', color:'#c084fc' },
+  ];
+  document.getElementById('highlights').innerHTML = highlights.map(h => `
+    <div class="card" style="text-align:center;border-color:${h.color}40">
+      <div style="font-size:2rem">${h.icon}</div>
+      <div style="font-size:1.6rem;font-weight:800;color:${h.color};margin:8px 0">${h.val}</div>
+      <div style="font-size:0.8rem;color:var(--muted)">${h.lbl}</div>
+    </div>`).join('');
+
+  document.getElementById('updateTime').textContent = '⏱️ Letztes Update: ' + new Date().toLocaleTimeString('de-AT');
+}
+
+function renderMatchesSection(filter = 'all') {
+  let filtered = MATCHES;
+  if (filter === 'live') filtered = MATCHES.filter(m => m.status === 'live');
+  if (filter === 'done') filtered = MATCHES.filter(m => m.status === 'done');
+  if (filter === 'soon') filtered = MATCHES.filter(m => m.status === 'soon');
+  filtered = [...filtered].sort((a, b) => toMinutes(a) - toMinutes(b));
+  document.getElementById('allMatchesGrid').innerHTML = filtered.map(renderMatchCard).join('');
+}
+
+function renderGroupsSection() {
+  document.getElementById('groupTables').innerHTML = Object.keys(GROUPS).map(renderGroupTable).join('');
+}
+
+function renderPredictions() {
+  const sorted = [...WM_ODDS].filter(t => t.name !== 'Andere').sort((a,b) => b.pct - a.pct);
+  document.getElementById('predList').innerHTML = sorted.map((t,i) => `
+    <div class="odds-card" style="margin-bottom:10px">
+      <div class="odds-rank" style="font-size:1.5rem">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+      <div class="odds-flag" style="font-size:2rem">${t.flag}</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${t.name}</div>
+        <div class="odds-bar" style="margin-top:6px"><div class="odds-bar-fill" style="width:${t.pct * 5}%"></div></div>
+      </div>
+      <div class="odds-pct" style="font-size:1.4rem">${t.pct}%</div>
+    </div>`).join('') +
+    `<div style="font-size:0.75rem;color:var(--muted);margin-top:16px;padding:12px;background:var(--card);border-radius:8px">
+      📊 <strong>Quelle:</strong> 70% Sofascore Power Rankings (Vorturnier-Stärke aus Form, Marktquoten & Gegnerstärke, Stand 09.06.2026) + 30% tatsächliche xG-Differenz im bisherigen Turnier (RealGM xG Tracker, Stand 19.06.2026). Kein direktes "WM-Sieg-%" der Anbieter, sondern eine eigene Verrechnung beider Quellen, normalisiert über alle 48 Teams. Wird nur bei deiner Nachfrage neu berechnet, nicht automatisch live.
+    </div>`;
+}
+
+// ========== NAVIGATION ==========
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'matches') renderMatchesSection();
+  if (name === 'groups') renderGroupsSection();
+  if (name === 'predictions') renderPredictions();
+}
+
+function filterMatches(type, btn) {
+  document.querySelectorAll('.inner-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMatchesSection(type);
+}
+
+// ========== LIVE-DATEN (openfootball/worldcup.json, über GitHub) ==========
+// Kein API-Key nötig, keine CORS-Probleme (raw.githubusercontent.com erlaubt Browser-Zugriff).
+// Wichtig zu wissen: Diese Quelle wird von Hand gepflegt, i.d.R. einmal täglich aktualisiert -
+// keine sekundengenaue Live-Minute, aber zuverlässige Ergebnis-Updates ohne eigenen Server.
+const WORLDCUP_JSON_URL_PRIMARY = 'https://cdn.jsdelivr.net/gh/openfootball/worldcup.json@master/2026/worldcup.json';
+const WORLDCUP_JSON_URL_FALLBACK = 'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json';
+const LIVE_REFRESH_MS = 5 * 60 * 1000; // alle 5 Minuten reicht, da die Quelle selbst nicht öfter aktualisiert wird
+
+// Team-Namen-Mapping: openfootball liefert englische Namen, unsere Daten sind auf Deutsch.
+const TEAM_NAME_EN_TO_DE = {
+  'Mexico':'Mexiko','South Africa':'Südafrika','South Korea':'Südkorea','Korea Republic':'Südkorea',
+  'Czech Republic':'Tschechien','Czechia':'Tschechien','Canada':'Kanada','Bosnia and Herzegovina':'Bosnien',
+  'Switzerland':'Schweiz','Qatar':'Katar','Brazil':'Brasilien','Morocco':'Marokko','Haiti':'Haiti',
+  'Scotland':'Schottland','United States':'USA','USA':'USA','Paraguay':'Paraguay','Australia':'Australien',
+  'Turkey':'Türkei','Türkiye':'Türkei','Germany':'Deutschland','Curacao':'Curaçao','Curaçao':'Curaçao',
+  'Ivory Coast':'Elfenbeinküste',"Côte d'Ivoire":'Elfenbeinküste','Ecuador':'Ecuador','Netherlands':'Niederlande',
+  'Japan':'Japan','Sweden':'Schweden','Tunisia':'Tunesien','Belgium':'Belgien','Egypt':'Ägypten',
+  'Iran':'Iran','IR Iran':'Iran','New Zealand':'Neuseeland','Spain':'Spanien','Cape Verde':'Kap Verde',
+  'Cabo Verde':'Kap Verde','Saudi Arabia':'Saudi-Arabien','Uruguay':'Uruguay','France':'Frankreich',
+  'Senegal':'Senegal','Iraq':'Irak','Norway':'Norwegen','Argentina':'Argentinien','Algeria':'Algerien',
+  'Austria':'Österreich','Jordan':'Jordanien','Portugal':'Portugal','DR Congo':'DR Kongo','Congo DR':'DR Kongo',
+  'Uzbekistan':'Usbekistan','Colombia':'Kolumbien','England':'England','Croatia':'Kroatien','Ghana':'Ghana',
+  'Panama':'Panama',
+};
+
+function mapTeamNameToDe(enName) {
+  return TEAM_NAME_EN_TO_DE[enName] || enName;
+}
+
+// Baut aus unserem Spielplan-Format (date: "DD.MM.", time: "HH:MM", MESZ) ein echtes Datum,
+// um abzuschätzen, ob ein Spiel laut Anstoßzeit gerade laufen müsste.
+function parseMatchKickoff(m) {
+  if (!m.date || !m.time) return null;
+  const [day, month] = m.date.replace(/\.$/, '').split('.').map(Number);
+  const [hour, minute] = m.time.split(':').map(Number);
+  if (!day || !month || isNaN(hour) || isNaN(minute)) return null;
+  // MESZ = UTC+2 im Sommer; als feste Jahreszahl 2026 für dieses Turnier.
+  return new Date(Date.UTC(2026, month - 1, day, hour - 2, minute));
+}
+
+// Holt den aktuellen WM-2026-Spielplan/-stand von openfootball und überschreibt Status/Ergebnis
+// in unserem MATCHES-Array, sofern ein passendes Spiel (gleiche Teams) gefunden wird.
+// Versucht zuerst jsDelivr (zuverlässiges CORS), bei Fehlschlag raw.githubusercontent.com als Fallback.
+async function fetchWorldcupJson() {
+  for (const url of [WORLDCUP_JSON_URL_PRIMARY, WORLDCUP_JSON_URL_FALLBACK]) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return await res.json();
+      console.warn('Quelle antwortete mit Fehler:', url, res.status);
+    } catch (err) {
+      console.warn('Quelle nicht erreichbar:', url, err);
+    }
+  }
+  return null;
+}
+
+async function refreshLiveData() {
+  const statusEl = document.getElementById('liveStatusText');
+  try {
+    const data = await fetchWorldcupJson();
+
+    // Schritt 1: Live-Status für JEDES Spiel in unserem eigenen Spielplan berechnen -
+    // unabhängig davon, ob/wie die externe Quelle es liefert. Das ist die einzige Stelle,
+    // die wirklich "weiß", wie spät es gerade ist (über Date.now()).
+    MATCHES.forEach(local => {
+      if (local.status === 'done') return; // beendete Spiele nicht mehr anfassen
+      const kickoff = parseMatchKickoff(local);
+      if (!kickoff) return;
+      const minutesSinceKickoff = (Date.now() - kickoff.getTime()) / 60000;
+      if (minutesSinceKickoff >= 0 && minutesSinceKickoff <= 130) {
+        local.status = 'live';
+        local.minute = Math.min(90, Math.round(minutesSinceKickoff));
+      } else if (minutesSinceKickoff < 0) {
+        if (local.status === 'live') local.status = 'soon'; // Uhrzeit/Datum geändert -> zurücksetzen
+      } else if (minutesSinceKickoff > 130) {
+        // Anstoß war vor mehr als 130 Minuten, aber kein Endergebnis bekannt (Quelle noch
+        // nicht aktualisiert). Nicht für immer auf 'live' hängen lassen - stattdessen als
+        // "wartet auf offizielles Ergebnis" markieren, damit es nicht ewig live wirkt.
+        if (local.status === 'live') local.status = 'awaiting_result';
+      }
+    });
+
+    if (!data) {
+      if (statusEl) statusEl.textContent = '⚠️ Ergebnis-Abgleich fehlgeschlagen (keine Quelle erreichbar) – Live-Status läuft trotzdem über die Anstoßzeit.';
+      const activeSection = document.querySelector('.section.active');
+      if (activeSection) {
+        const id = activeSection.id;
+        if (id === 'dashboard') renderDashboard();
+        if (id === 'matches') renderMatchesSection();
+        if (id === 'groups') renderGroupsSection();
+      }
+      return;
+    }
+    const liveMatches = data.matches || [];
+    let updated = 0;
+    let unmatched = 0;
+
+    // Schritt 2: Ergebnisse von der externen Quelle abgleichen, wo ein passendes Spiel
+    // gefunden wird. Setzt bei echtem Endergebnis den Status final auf 'done'.
+    liveMatches.forEach(lm => {
+      const homeDe = mapTeamNameToDe(lm.team1);
+      const awayDe = mapTeamNameToDe(lm.team2);
+      const local = MATCHES.find(m => m.home === homeDe && m.away === awayDe);
+      if (!local) { unmatched++; return; }
+
+      const hasResult = lm.score && Array.isArray(lm.score.ft);
+      if (hasResult) {
+        local.homeScore = lm.score.ft[0];
+        local.awayScore = lm.score.ft[1];
+        local.status = 'done';
+        updated++;
+
+        // Torschützen übernehmen, sobald sie von der Quelle geliefert werden (nur bei
+        // beendeten Spielen verfügbar - openfootball hat keine Live-Ereignisse während des Spiels).
+        if (Array.isArray(lm.goals1) || Array.isArray(lm.goals2)) {
+          local.scorersHome = (lm.goals1 || []).map(g => ({ name: g.name, minute: g.minute }));
+          local.scorersAway = (lm.goals2 || []).map(g => ({ name: g.name, minute: g.minute }));
+        }
+
+        // Kein recherchierter xG-Wert für dieses Spiel hinterlegt? Dann automatisch berechnen,
+        // damit nie wieder eine Lücke entsteht. Klar als "berechnet" markiert (estimatedXg),
+        // nicht mit echten, recherchierten Werten (xgHome/xgAway) vermischt.
+        if (local.xgHome == null && local.estimatedXg == null) {
+          const forecast = calcXgForecast(local);
+          if (forecast) {
+            local.estimatedXg = { home: forecast.home, away: forecast.away };
+          }
+        }
+      }
+    });
+
+    // Aktuell sichtbare Sektion neu rendern, damit die Live-Daten sofort erscheinen
+    const activeSection = document.querySelector('.section.active');
+    if (activeSection) {
+      const id = activeSection.id;
+      if (id === 'dashboard') renderDashboard();
+      if (id === 'matches') renderMatchesSection();
+      if (id === 'groups') renderGroupsSection();
+    }
+    document.getElementById('updateTime').textContent =
+      '⏱️ Live aktualisiert: ' + new Date().toLocaleTimeString('de-AT');
+    if (statusEl) statusEl.textContent = `🟢 Live-Update aktiv (openfootball, ${updated} Ergebnisse abgeglichen${unmatched ? `, ${unmatched} Spiele ohne Namens-Treffer` : ''}). Live-Status wird unabhängig über die Anstoßzeit erkannt.`;
+  } catch (err) {
+    console.warn('Live-Update fehlgeschlagen:', err);
+    if (statusEl) statusEl.textContent = '⚠️ Live-Update fehlgeschlagen (Netzwerk).';
+  }
+}
+
+// ========== INIT ==========
+renderDashboard();
+renderGroupsSection(); // pre-render for speed
+
+refreshLiveData();
+setInterval(refreshLiveData, LIVE_REFRESH_MS);
+
+// Auto-refresh every 60s
+setInterval(() => {
+  document.getElementById('updateTime').textContent = '⏱️ Letztes Update: ' + new Date().toLocaleTimeString('de-AT');
+}, 60000);
+</script>
+</body>
+</html>

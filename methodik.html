@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WM 2026 · Modell, Code & Methodik</title>
+
+<!-- Code-Highlighting & Markdown (CDN) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     PALETTE & TYPE — change these to match your dashboard exactly.
+     Paste me your index.html and I'll align them precisely.
+     ============================================================ */
+  :root{
+    --bg:#0e1117;            /* page background        */
+    --surface:#161b22;       /* card background        */
+    --surface-2:#1c232c;     /* nested panel           */
+    --border:#262d36;        /* hairlines / card edges */
+    --fg:#e6edf3;            /* primary text           */
+    --muted:#8b97a3;         /* secondary text         */
+    --green:#3fb950;         /* primary accent (pitch) */
+    --blue:#4493f8;          /* "Markt / implizit"     */
+    --amber:#e3a008;         /* "real / empirisch"     */
+    --red:#f85149;           /* warning / artefact     */
+    --radius:14px;
+    --maxw:980px;
+    --font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:var(--font);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--green);text-decoration:none}
+  a:hover{text-decoration:underline}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(14,17,23,.82);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width:var(--maxw);margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .brand .ball{font-size:1.35rem}
+  .brand small{display:block;font-weight:500;color:var(--muted);font-size:.72rem;letter-spacing:.02em}
+  .nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .nav a{
+    color:var(--muted);font-size:.86rem;font-weight:500;
+    padding:7px 11px;border-radius:9px;
+  }
+  .nav a:hover{color:var(--fg);background:var(--surface);text-decoration:none}
+  .nav a.here{color:var(--green);background:var(--surface)}
+
+  /* ---- layout ---- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  section{padding:54px 0;border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+  .eyebrow{
+    font-family:var(--mono);font-size:.74rem;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    display:flex;align-items:center;gap:9px;margin:0 0 12px;
+  }
+  h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.06;letter-spacing:-.025em;font-weight:800;margin:.1em 0 .35em}
+  h2{font-size:clamp(1.5rem,3.4vw,2.1rem);letter-spacing:-.02em;font-weight:700;margin:0 0 .5em}
+  h3{font-size:1.12rem;font-weight:600;margin:1.6em 0 .4em;letter-spacing:-.01em}
+  p{margin:0 0 1em;color:#cdd6df}
+  .lead{font-size:1.16rem;color:var(--fg)}
+  .muted{color:var(--muted)}
+  strong{color:var(--fg);font-weight:600}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center;padding-top:44px}
+  @media(max-width:840px){.hero{grid-template-columns:1fr;gap:24px}}
+  .plotcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+  .plotcard figcaption{font-size:.82rem;color:var(--muted);margin-top:10px;line-height:1.45}
+  .plotcard .key{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:.72rem;margin-bottom:6px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+  /* pipeline */
+  .pipe{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 2px}
+  .step{flex:1 1 150px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:14px 15px}
+  .step .n{font-family:var(--mono);font-size:.72rem;color:var(--green);font-weight:600}
+  .step h4{margin:.3em 0 .2em;font-size:.96rem}
+  .step p{margin:0;font-size:.85rem;color:var(--muted)}
+
+  /* edge two-column */
+  .pos{border-left:3px solid var(--green)}
+  .neg{border-left:3px solid var(--amber)}
+
+  /* callout */
+  .callout{background:linear-gradient(180deg,rgba(248,81,73,.07),rgba(248,81,73,.03));
+    border:1px solid rgba(248,81,73,.35);border-radius:var(--radius);padding:20px 22px}
+  .callout .eyebrow{color:var(--red)}
+  .ok-callout{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.3)}
+  .ok-callout .eyebrow{color:var(--green)}
+
+  ul.tick{list-style:none;padding:0;margin:0 0 1em}
+  ul.tick li{position:relative;padding-left:24px;margin:.4em 0;color:#cdd6df}
+  ul.tick li::before{content:"▸";position:absolute;left:4px;color:var(--green)}
+
+  code:not(pre code){background:var(--surface-2);border:1px solid var(--border);
+    border-radius:5px;padding:.08em .4em;font-family:var(--mono);font-size:.86em;color:#e6edf3}
+
+  /* code browser */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .tab{font-family:var(--mono);font-size:.8rem;color:var(--muted);background:var(--surface);
+    border:1px solid var(--border);border-radius:9px;padding:7px 12px;cursor:pointer;transition:.15s}
+  .tab:hover{color:var(--fg)}
+  .tab.active{color:var(--bg);background:var(--green);border-color:var(--green);font-weight:600}
+  pre{margin:0;border-radius:var(--radius);border:1px solid var(--border);max-height:560px;overflow:auto}
+  pre code.hljs{padding:20px;font-family:var(--mono);font-size:.82rem;line-height:1.55;background:#0c1016}
+  .codemeta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:8px}
+
+  /* rendered paper */
+  .paper{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:32px 38px;max-height:680px;overflow:auto}
+  .paper h1{font-size:1.7rem;border-bottom:1px solid var(--border);padding-bottom:.3em}
+  .paper h2{font-size:1.25rem;margin-top:1.6em;color:var(--green)}
+  .paper h3{font-size:1.02rem}
+  .paper table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.88rem}
+  .paper th,.paper td{border:1px solid var(--border);padding:7px 10px;text-align:left}
+  .paper th{background:var(--surface-2)}
+  .paper code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:.05em .35em;font-family:var(--mono);font-size:.85em}
+  .paper pre{background:#0c1016;padding:16px;overflow:auto}
+  .paper pre code{border:none;background:none}
+  .paper blockquote{border-left:3px solid var(--blue);margin:1em 0;padding:.2em 1em;color:var(--muted)}
+  .paper hr{border:none;border-top:1px solid var(--border);margin:2em 0}
+
+  .fallback{color:var(--muted);font-family:var(--mono);font-size:.85rem;padding:18px;
+    border:1px dashed var(--border);border-radius:10px}
+
+  footer{padding:40px 0 60px;color:var(--muted);font-size:.85rem}
+  footer .wrap > div{max-width:760px}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="ball">⚽</span>
+      <span>WM 2026 Analyser<small>Modell · Code · Methodik</small></span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">🏠 Dashboard</a>
+      <a href="index.html#spiele">📅 Alle Spiele</a>
+      <a href="index.html#gruppen">📊 Gruppen</a>
+      <a href="index.html#wmsieg">🎯 WM-Sieg</a>
+      <a href="methodik.html" class="here">🔬 Modell</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<div class="wrap">
+<section class="hero">
+  <div>
+    <p class="eyebrow">▦ Methodik &amp; Statistik</p>
+    <h1>Die Lücke, die es nie gab.</h1>
+    <p class="lead">Dieses Dashboard misst, ob sich Quoten <em>systematisch</em> schlagen lassen —
+      ehrlich und ohne Selbsttäuschung. Es ist ein Mess-Instrument für <strong>Closing Line Value</strong>,
+      kein Tippservice. Das ursprüngliche „30-Prozentpunkte-Arbitrage"-Versprechen hat den Test nicht überlebt;
+      was übrig bleibt, ist eine saubere Methode und ein vorab registriertes Ergebnis.</p>
+    <p class="muted">Unten: das Modell, der ehrlich beschriebene „Edge", der vollständige Python-Code,
+      das wissenschaftliche Paper und die E-Mail-Automatisierung — alles aus diesem Repository.</p>
+  </div>
+  <figure class="plotcard">
+    <div class="key">
+      <span><span class="dot" style="background:var(--blue)"></span>Markt (implizit)</span>
+      <span><span class="dot" style="background:var(--red)"></span>Original-„Signal"</span>
+    </div>
+    <svg id="calib" viewBox="0 0 360 340" role="img" aria-label="Kalibrierungs-Plot: der Markt liegt auf der Diagonale, ein einzelner Ausreißer bei 1,60-Quote."></svg>
+    <figcaption>Kalibrierung der Quoten: implizite vs. tatsächliche Trefferquote. Ein fairer Markt
+      liegt auf der Diagonale (innerhalb der Stichprobenstreuung). Der rote Punkt — „1,60 → 33 %" — ist
+      der Ausreißer, mit dem alles begann. Er ist <strong>Rauschen</strong> (n=91), kein Edge.</figcaption>
+  </figure>
+</section>
+</div>
+
+<!-- ============ DAS MODELL ============ -->
+<div class="wrap">
+<section id="modell">
+  <p class="eyebrow">🧠 Pipeline</p>
+  <h2>Das Modell</h2>
+  <p>Das Modell trifft keine kühne Vorhersage. Es macht den Markt vergleichbar, sucht Stellen, an denen
+    ein Preis besser ist als der Konsens, und misst dann sauber, ob dieser Preis den <em>Schlusskurs</em>
+    schlägt. Fünf Schritte:</p>
+  <div class="pipe">
+    <div class="step"><div class="n">01</div><h4>Entvigung</h4><p>Buchmacher-Quoten → faire Wahrscheinlichkeiten (Normalisierung bzw. Shin-Modell), Marge herausgerechnet.</p></div>
+    <div class="step"><div class="n">02</div><h4>Eigenes Modell</h4><p>Optional: deine eigene (Heim/Remis/Auswärts)-Schätzung. Ohne sie testet das System nur Line-Shopping.</p></div>
+    <div class="step"><div class="n">03</div><h4>Signal</h4><p>Wette die Seite, die gegenüber dem Konsens am stärksten unterbewertet ist — sofern der Vorteil eine Schwelle überschreitet.</p></div>
+    <div class="step"><div class="n">04</div><h4>CLV-Messung</h4><p>Genommener Preis vs. entvigter Schlusskurs. Positiv = der Markt bewegt sich nach der Wette zu deiner Seite.</p></div>
+    <div class="step"><div class="n">05</div><h4>Monte-Carlo &amp; Power</h4><p>Wie viele abgerechnete Wetten braucht es, um einen echten Edge zu bestätigen? Antwort: Tausende.</p></div>
+  </div>
+  <p class="muted" style="margin-top:18px">Der primäre Endpunkt ist der <strong>entvigte CLV</strong> (er konvergiert weit schneller als der reale Profit),
+    sekundär die realisierte Rendite und die Kalibrierung. Die ganze Logik steckt in <code>clv_lab.py</code> unten.</p>
+</section>
+</div>
+
+<!-- ============ DER EDGE ============ -->
+<div class="wrap">
+<section id="edge">
+  <p class="eyebrow">🎯 Ehrliche Einordnung</p>
+  <h2>Der Edge</h2>
+  <p>„Edge" heißt hier <strong>Closing Line Value</strong>: einen Preis sichern, dem der Markt erst später
+    zustimmt. Wer den Schlusskurs schlägt, findet Wert, den der Markt nachträglich bestätigt. Wer ihn nicht
+    schlägt, wird durch keinen Einsatzplan profitabel. Genau das misst dieses System.</p>
+  <div class="grid2">
+    <div class="card pos">
+      <h3 style="margin-top:0;color:var(--green)">Was die API dir bringt</h3>
+      <ul class="tick">
+        <li><strong>Line-Shopping</strong> über viele Buchmacher gleichzeitig — der beste verfügbare Preis pro Ausgang.</li>
+        <li><strong>Frühe, noch „weiche" Quoten</strong>, bevor sie sich bis zum Anpfiff zum scharfen Schlusskurs verdichten.</li>
+        <li><strong>Geschwindigkeit &amp; Automatisierung</strong>: Quoten werden automatisch erfasst, Signale ausgewertet, Alerts verschickt.</li>
+      </ul>
+    </div>
+    <div class="card neg">
+      <h3 style="margin-top:0;color:var(--amber)">Was er nicht ist</h3>
+      <ul class="tick">
+        <li>Der messbare Schlusskurs ist ein <strong>Weichbuchmacher-Konsens</strong> (kein Pinnacle) — ein schwächerer Maßstab, leichter zu schlagen, weniger aussagekräftig.</li>
+        <li>Der erwartete <strong>realisierbare Edge ist ≈ 0</strong> — so sagt es die Literatur, auf der das Paper steht.</li>
+        <li><strong>Konten-Limitierung</strong> trifft genau die Konten, die den Schlusskurs schlagen. Selbst echter CLV ist auf Weichbuchmachern kaum spielbar.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:16px">Deshalb ist das hier ein <strong>Falsifikations-Instrument</strong>: Es ist gebaut, um den Edge zu testen —
+    und ihn höchstwahrscheinlich zu widerlegen. Die Ehrlichkeit <em>ist</em> die Glaubwürdigkeit.</p>
+</section>
+</div>
+
+<!-- ============ API & SCHLÜSSEL ============ -->
+<div class="wrap">
+<section id="api">
+  <p class="eyebrow">🔑 API-Schlüssel</p>
+  <h2>Die API — und wo der Schlüssel hingehört</h2>
+  <p>Die Datenbasis kommt von <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a>:
+    ein Aufruf liefert alle Spiele einer Liga samt Quoten mehrerer Buchmacher (Heim/Remis/Auswärts, dezimal). Das ist
+    der Hebel des Schlüssels — er füttert die Pipeline und die Alerts.</p>
+  <div class="callout">
+    <p class="eyebrow">⚠ Wichtig — selbst einrichten, nicht hier</p>
+    <p style="margin-bottom:.6em">Diese Website ist <strong>öffentlich</strong>. Ein API-Schlüssel im Browser-Code wäre für jeden sichtbar und
+      würde sofort missbraucht. Darum gilt: <strong>Der Schlüssel kommt niemals in die Website und in keine Datei im Repo.</strong></p>
+    <p style="margin:0">Er lebt ausschließlich im Backend als Umgebungsvariable bzw. GitHub-Secret. Diesen Teil richtest du
+      selbst ein — die genauen Schritte stehen in <code>INTEGRATION.md</code>:</p>
+    <pre style="margin-top:12px;border:1px solid var(--border)"><code class="hljs language-bash">export ODDS_API_KEY=dein_rotierter_schluessel   # lokal / Server, nie committen
+# GitHub: Settings → Secrets and variables → Actions → New repository secret</code></pre>
+  </div>
+  <p class="muted" style="margin-top:14px">Der oben gezeigte Code liest den Schlüssel aus der Umgebung (<code>os.environ["ODDS_API_KEY"]</code>) —
+    es steht also kein Geheimnis im sichtbaren Quelltext.</p>
+</section>
+</div>
+
+<!-- ============ DER CODE ============ -->
+<div class="wrap">
+<section id="code">
+  <p class="eyebrow">💻 Quelltext</p>
+  <h2>Der Code</h2>
+  <p>Die komplette Engine — direkt aus diesem Repository geladen. Nur <code>numpy</code> + <code>scipy</code> +
+    Standardbibliothek, damit sie überall läuft.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="codemeta" id="codemeta">Lade…</div>
+  <pre><code id="codeblock" class="hljs language-python">// …</code></pre>
+  <p class="muted" style="margin-top:12px">Reihenfolge der Nutzung: <code>simulate.py</code> (Offline-Validierung, kein Schlüssel) →
+    <code>collect.py</code> (Daten sammeln) → <code>analyze.py</code> (Auswertung) → <code>notify.py</code> (Alerts).</p>
+</section>
+</div>
+
+<!-- ============ DAS PAPER ============ -->
+<div class="wrap">
+<section id="paper">
+  <p class="eyebrow">📄 Empirische Grundlage</p>
+  <h2>Das Paper, auf dem alles beruht</h2>
+  <p>Das vorab registrierte Protokoll (englisch): Nullhypothese = Markteffizienz, primärer Endpunkt = entvigter CLV,
+    mit korrigierter Mathematik und der Literatur, die das ursprüngliche Arbitrage-Versprechen widerlegt.</p>
+  <div class="paper" id="paper-body"><span class="fallback">Lade Paper…</span></div>
+</section>
+</div>
+
+<!-- ============ AUTOMATISIERUNG ============ -->
+<div class="wrap">
+<section id="automation">
+  <p class="eyebrow">📧 E-Mail-Automatisierung</p>
+  <h2>Alerts ~5 Minuten vor Anpfiff</h2>
+  <p><code>notify.py</code> aktualisiert rund <strong>fünf Minuten vor jedem Anpfiff</strong> automatisch die Quoten,
+    wertet das Signal aus und schickt — falls es feuert — genau eine E-Mail pro Spiel (Duplikate werden unterdrückt).</p>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">So läuft es</h3>
+      <ul class="tick">
+        <li>Ein <code>/odds</code>-Aufruf liefert alle Spiele + Quoten → wird gespeichert (das ist das automatische Odds-Update und verlängert zugleich die Open→Close-Historie).</li>
+        <li>Fällt ein Anpfiff in das Vorlauf-Fenster und wurde noch nicht alarmiert: E-Mail mit Spiel, bestem Preis, Konsens und Vorteil.</li>
+        <li>Der schlanke Loop schläft zwischen den Spielen und wacht kurz vor dem nächsten Anpfiff — schont das Kontingent.</li>
+      </ul>
+    </div>
+    <div class="card ok-callout">
+      <p class="eyebrow">▸ Betrieb (Kurzfassung)</p>
+      <pre style="border:1px solid var(--border)"><code class="hljs language-bash"># Dauerbetrieb (z. B. PythonAnywhere Always-on-Task):
+python3 notify.py --loop
+
+# oder ein Durchlauf, per 5-Minuten-Scheduler getaktet:
+python3 notify.py</code></pre>
+      <p style="margin:.6em 0 0;font-size:.85rem;color:var(--muted)">SMTP-Zugang (z. B. Gmail-App-Passwort) und <code>ODDS_API_KEY</code>
+        kommen als Umgebungsvariablen/Secrets — Details &amp; Kontingent-Hinweise in <code>INTEGRATION.md</code>.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<footer>
+  <div class="wrap"><div>
+    <p><strong>Haftungsausschluss.</strong> Reines Paper-Trading — es wird kein echtes Geld eingesetzt. Die Inhalte und
+      Signale sind ein statistisches Mess-Instrument, keine Wett- oder Finanzberatung. Der erwartete realisierbare Edge ist ≈ 0.</p>
+    <p>Glücksspiel kann abhängig machen. Nur für Volljährige (18+). Hilfe in Österreich: <a href="https://www.spielsuchthilfe.at" target="_blank" rel="noopener">Spielsuchthilfe</a>;
+      in Deutschland die Beratung der BZgA. Spiele verantwortungsvoll.</p>
+    <p class="muted">WM 2026 Analyser · Methodik-Seite. Quelltext &amp; Paper aus diesem Repository.</p>
+  </div></div>
+</footer>
+
+<script>
+/* ---------- Kalibrierungs-Plot (Signatur) ---------- */
+(function(){
+  const svg = document.getElementById('calib');
+  if(!svg) return;
+  const W=360,H=340,m={l:46,r:14,t:14,b:40};
+  const x0=m.l,x1=W-m.r,y0=H-m.b,y1=m.t;
+  const X=v=>x0+v*(x1-x0), Y=v=>y0+v*(y1-y0);
+  const NS='http://www.w3.org/2000/svg';
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  // gerahmte Achsen + Gitter
+  for(let g=0;g<=1.0001;g+=0.25){
+    svg.appendChild(el('line',{x1:X(g),y1:y0,x2:X(g),y2:y1,stroke:'#262d36','stroke-width':1}));
+    svg.appendChild(el('line',{x1:x0,y1:Y(g),x2:x1,y2:Y(g),stroke:'#262d36','stroke-width':1}));
+    const tx=el('text',{x:X(g),y:y0+16,fill:'#8b97a3','font-size':9,'text-anchor':'middle','font-family':'JetBrains Mono, monospace'});tx.textContent=g.toFixed(2);svg.appendChild(tx);
+    const ty=el('text',{x:x0-8,y:Y(g)+3,fill:'#8b97a3','font-size':9,'text-anchor':'end','font-family':'JetBrains Mono, monospace'});ty.textContent=g.toFixed(2);svg.appendChild(ty);
+  }
+  // Diagonale y=x (perfekte Kalibrierung)
+  svg.appendChild(el('line',{x1:X(0),y1:Y(0),x2:X(1),y2:Y(1),stroke:'#3fb950','stroke-width':1.5,'stroke-dasharray':'4 4',opacity:.8}));
+  // Achsentitel
+  const ax=el('text',{x:(x0+x1)/2,y:H-4,fill:'#8b97a3','font-size':9.5,'text-anchor':'middle','font-family':'JetBrains Mono, monospace'});ax.textContent='implizit (entvigt)';svg.appendChild(ax);
+  const ay=el('text',{x:14,y:(y0+y1)/2,fill:'#8b97a3','font-size':9.5,'text-anchor':'middle','font-family':'JetBrains Mono, monospace',transform:`rotate(-90 14 ${(y0+y1)/2})`});ay.textContent='tatsächlich';svg.appendChild(ay);
+  // Daten: (implizit, empirisch) — kalibrierte Punkte + der eine Ausreißer
+  const pts=[[.833,.829],[.769,.772],[.714,.702],[.667,.648],[.588,.572],[.556,.527],
+             [.526,.493],[.500,.457],[.400,.450],[.333,.373],[.250,.275],[.200,.214]];
+  pts.forEach(p=>svg.appendChild(el('circle',{cx:X(p[0]),cy:Y(p[1]),r:4.2,fill:'#4493f8',opacity:.85})));
+  // Ausreißer 1.60 -> 33 %
+  const ox=.625, oy=.330;
+  svg.appendChild(el('line',{x1:X(ox),y1:Y(ox),x2:X(ox),y2:Y(oy),stroke:'#f85149','stroke-width':1,'stroke-dasharray':'2 3',opacity:.7}));
+  svg.appendChild(el('circle',{cx:X(ox),cy:Y(oy),r:5.6,fill:'#f85149'}));
+  const lbl=el('text',{x:X(ox)+10,y:Y(oy)+4,fill:'#f85149','font-size':9.5,'font-family':'JetBrains Mono, monospace','font-weight':600});lbl.textContent='1,60 → 33 %';svg.appendChild(lbl);
+})();
+
+/* ---------- Code-Browser (lädt echte .py-Dateien) ---------- */
+(function(){
+  const files=[
+    ['clv_lab.py','Engine: Entvigung, CLV, Bootstrap-KI, Monte-Carlo, Power, Signale, SQLite'],
+    ['odds_client.py','Client für The Odds API v4 (liest ODDS_API_KEY aus der Umgebung)'],
+    ['collect.py','Ein Sammel-Durchlauf: Snapshots + ein Paper-Bet pro Spiel'],
+    ['analyze.py','Auswertung: CLV-Report, Kalibrierung, Power'],
+    ['notify.py','E-Mail-Alerts ~5 Min vor Anpfiff + automatisches Odds-Update'],
+    ['simulate.py','Offline-Validierung + Monte-Carlo-Demo (kein Schlüssel nötig)'],
+    ['config.py','Einstellungen: Liga, Signal, Schwelle (Secrets aus der Umgebung)'],
+  ];
+  const tabs=document.getElementById('tabs');
+  const block=document.getElementById('codeblock');
+  const meta=document.getElementById('codemeta');
+  let active=null;
+  function load(name,desc,btn){
+    if(active) active.classList.remove('active');
+    btn.classList.add('active'); active=btn;
+    meta.textContent=desc;
+    block.textContent='Lade '+name+' …';
+    block.removeAttribute('data-highlighted');
+    fetch('./'+name).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();})
+      .then(t=>{block.textContent=t;block.className='hljs language-python';
+        if(window.hljs){block.removeAttribute('data-highlighted');hljs.highlightElement(block);}})
+      .catch(()=>{block.textContent='// '+name+' konnte nicht geladen werden.\n'+
+        '// Bitte die Seite über GitHub Pages oder einen lokalen Webserver öffnen\n'+
+        '// (python3 -m http.server), nicht per file://, und die .py-Dateien neben\n'+
+        '// methodik.html im Repo ablegen.';});
+  }
+  files.forEach((f,i)=>{
+    const b=document.createElement('button');
+    b.className='tab';b.textContent=f[0];
+    b.onclick=()=>load(f[0],f[1],b);
+    tabs.appendChild(b);
+    if(i===0) load(f[0],f[1],b);
+  });
+})();
+
+/* ---------- Paper rendern (protocol.md) ---------- */
+(function(){
+  const body=document.getElementById('paper-body');
+  fetch('./protocol.md').then(r=>{if(!r.ok)throw new Error(r.status);return r.text();})
+    .then(md=>{
+      body.innerHTML = window.marked ? marked.parse(md) : '<pre>'+md.replace(/</g,'&lt;')+'</pre>';
+      body.querySelectorAll('pre code').forEach(b=>{if(window.hljs)hljs.highlightElement(b);});
+    })
+    .catch(()=>{body.innerHTML='<div class="fallback">Paper konnte nicht geladen werden. '+
+      'Bitte die Seite über GitHub Pages oder einen lokalen Webserver öffnen (nicht per file://) '+
+      'und <code>protocol.md</code> neben <code>methodik.html</code> im Repo ablegen.</div>';});
+})();
+</script>
+</body>
+</html>
